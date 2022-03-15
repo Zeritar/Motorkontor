@@ -1,0 +1,16 @@
+﻿.table {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    float: left;
+}
+
+th {
+    width: 15vw;
+    text-align: left;
+    border-bottom: solid #a49390 1px;
+}
+
+td {
+    width: 15vw;
+}

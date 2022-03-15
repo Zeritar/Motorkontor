@@ -1,0 +1,39 @@
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.banner {
+    overflow: auto;
+    background-color: #f7f7f7;
+    height: calc(48px + 20px);
+    overflow: hidden;
+    padding: 10px 20px;
+    border-bottom: solid #a49390 1px;
+}
+
+.content {
+    overflow: auto;
+    width: calc(100% - 200px - 50px);
+    max-width: calc(100% - 200px - 50px);
+    height: 50vh;
+    float: left;
+    margin: 0px 50px 0px 0px;
+    padding: 20px 20px;
+}
+
+.menu {
+    width: 200px;
+    height: 100vh;
+    float: left;
+    background-color: #15153d;
+}
+
+.main {
+    flex: 1;
+}
+
+.sidebar {
+    background-color: #15153d;
+}

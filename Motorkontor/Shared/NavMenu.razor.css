@@ -1,0 +1,35 @@
+.menubox {
+    width: 200px;
+    float: left;
+    padding: 10px 10px;
+}
+
+ul {
+    padding: 0;
+}
+
+.menuitem {
+    width: 180px;
+    margin-bottom: 5px;
+}
+
+    .menuitem ::deep a {
+        color: #FFFFFF;
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+        padding: 10px;
+        text-decoration: none;
+    }
+
+        .menuitem ::deep a.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        .menuitem ::deep a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
