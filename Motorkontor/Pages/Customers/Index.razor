@@ -17,18 +17,24 @@
                     <th>Kunde ID</th>
                     <th>Fornavn</th>
                     <th>Efternavn</th>
+                    <th>Addresse</th>
+                    <th>Postnummer</th>
+                    <th>By</th>
                     <th>Dato Oprettet</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var customer in customers)
                 {
-                    <tr>
-                        <td>@customer.customerID</td>
-                        <td>@customer.firstName</td>
-                        <td>@customer.lastName</td>
-                        <td>@customer.createDate.ToShortDateString()</td>
-                    </tr>
+                <tr>
+                    <td>@customer.customerID</td>
+                    <td>@customer.firstName</td>
+                    <td>@customer.lastName</td>
+                    <td>@customer.address.streetAndNo</td>
+                    <td>@customer.address.zipCode.zipCodeName</td>
+                    <td>@customer.address.zipCode.cityName</td>
+                    <td>@customer.createDate.ToShortDateString()</td>
+                </tr>
                 }
             </tbody>
         </table>

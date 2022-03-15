@@ -29,6 +29,8 @@ namespace Motorkontor
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<CustomerService>();
+            services.AddSingleton<ZipCodeService>();
+            services.AddSingleton<AddressService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

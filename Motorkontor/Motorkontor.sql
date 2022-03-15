@@ -78,19 +78,15 @@ CREATE PROCEDURE usp_readCustomerById
 )
 AS
 BEGIN
-SELECT c.CustomerId, c.FirstName, c.LastName, a.StreetAndNo, z.ZipcodeName, z.CityName, c.CreateDate FROM Customer AS c
-INNER JOIN Address AS a ON c.FK_AddressId = a.AddressId
-INNER JOIN Zipcode AS z ON a.FK_ZipcodeId = z.ZipcodeId
-WHERE c.CustomerId = @customerId
+SELECT CustomerId, FirstName, LastName, FK_AddressId, CreateDate FROM Customer
+WHERE CustomerId = @customerId
 END
 GO
 
 CREATE PROCEDURE usp_readCustomers
 AS
 BEGIN
-SELECT c.CustomerId, c.FirstName, c.LastName, a.StreetAndNo, z.ZipcodeName, z.CityName, c.CreateDate FROM Customer AS c
-INNER JOIN Address AS a ON c.FK_AddressId = a.AddressId
-INNER JOIN Zipcode AS z ON a.FK_ZipcodeId = z.ZipcodeId
+SELECT CustomerId, FirstName, LastName, FK_AddressId, CreateDate FROM Customer
 END
 GO
 
@@ -197,8 +193,7 @@ CREATE PROCEDURE usp_readSessionByGuid
 )
 AS
 BEGIN
-SELECT s.SessionGuid, l.UserName FROM Session AS s
-INNER JOIN Login AS L ON FK_LoginId = l.Id
+SELECT SessionGuid, FK_LoginId FROM Session
 WHERE SessionGuid = @sessionGuid
 END
 GO
@@ -297,8 +292,7 @@ CREATE PROCEDURE usp_readAddressById
 )
 AS
 BEGIN
-SELECT a.AddressId, a.StreetAndNo, z.ZipcodeName, z.CityName, a.CreateDate FROM Address AS a
-INNER JOIN Zipcode as z ON a.FK_ZipcodeId = z.ZipcodeId
+SELECT AddressId, StreetAndNo, FK_ZipcodeId, CreateDate FROM Address
 WHERE AddressId = @addressId
 END
 GO
@@ -306,8 +300,7 @@ GO
 CREATE PROCEDURE usp_readAddresses
 AS
 BEGIN
-SELECT a.AddressId, a.StreetAndNo, z.ZipcodeName, z.CityName, a.CreateDate FROM Address AS a
-INNER JOIN Zipcode as z ON a.FK_ZipcodeId = z.ZipcodeId
+SELECT AddressId, StreetAndNo, FK_ZipcodeId, CreateDate FROM Address
 END
 GO
 
@@ -457,9 +450,7 @@ CREATE PROCEDURE usp_readVehicleById
 )
 AS
 BEGIN
-SELECT v.VehicleId, v.Make, v.Model, c.CategoryName, f.FuelName, v.CreateDate FROM Vehicle AS v
-INNER JOIN Category AS c ON v.FK_CategoryId = c.CategoryId
-INNER JOIN Fuel AS f ON v.FK_FuelId = f.FuelId
+SELECT VehicleId, Make, Model, FK_CategoryId, FK_FuelId, CreateDate FROM Vehicle
 WHERE VehicleId = @vehicleId
 END
 GO
@@ -467,9 +458,7 @@ GO
 CREATE PROCEDURE usp_readVehicles
 AS
 BEGIN
-SELECT v.VehicleId, v.Make, v.Model, c.CategoryName, f.FuelName, v.CreateDate FROM Vehicle AS v
-INNER JOIN Category AS c ON v.FK_CategoryId = c.CategoryId
-INNER JOIN Fuel AS f ON v.FK_FuelId = f.FuelId
+SELECT VehicleId, Make, Model, FK_CategoryId, FK_FuelId, CreateDate FROM Vehicle
 END
 GO
 
@@ -519,9 +508,7 @@ CREATE PROCEDURE usp_readRegistrationById
 )
 AS
 BEGIN
-SELECT r.RegistrationId, c.FirstName, c.LastName, v.Make, v.Model, r.FirstRegistrationDate FROM Registration AS r
-INNER JOIN Customer AS c ON r.FK_CustomerId = c.CustomerId
-INNER JOIN Vehicle AS v ON r.FK_VehicleId = v.VehicleId
+SELECT RegistrationId, FK_CustomerId, FK_VehicleId, FirstRegistrationDate FROM Registration
 WHERE RegistrationId = @registrationId
 END
 GO
@@ -529,9 +516,7 @@ GO
 CREATE PROCEDURE usp_readRegistrations
 AS
 BEGIN
-SELECT r.RegistrationId, c.FirstName, c.LastName, v.Make, v.Model, r.FirstRegistrationDate FROM Registration AS r
-INNER JOIN Customer AS c ON r.FK_CustomerId = c.CustomerId
-INNER JOIN Vehicle AS v ON r.FK_VehicleId = v.VehicleId
+SELECT RegistrationId, FK_CustomerId, FK_VehicleId, FirstRegistrationDate FROM Registration
 END
 GO
 

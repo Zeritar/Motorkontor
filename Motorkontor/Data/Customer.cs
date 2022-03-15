@@ -15,6 +15,8 @@ namespace Motorkontor.Data
 
         public DateTime createDate { get; set; }
 
+        public virtual Address address { get; set; }
+
         public Customer() : this(0)
         {
 

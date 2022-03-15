@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Motorkontor.Data
 {
     public class CustomerService : DbService
     {
+        private AddressService addressService;
+
+        public CustomerService(AddressService _addressService)
+        {
+            addressService = _addressService;
+        }
+
         public Customer[] GetCustomers()
         {
             List<Customer> customers = new List<Customer>();
@@ -22,7 +26,8 @@ namespace Motorkontor.Data
                     {
                         firstName = reader["FirstName"].ToString(),
                         lastName = reader["LastName"].ToString(),
-                        createDate = (DateTime)reader["CreateDate"]
+                        createDate = (DateTime)reader["CreateDate"],
+                        address = addressService.GetAddresseById(Convert.ToInt32(reader["FK_AddressId"].ToString()))
                     });
                 }
             }
@@ -36,46 +41,11 @@ namespace Motorkontor.Data
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
                     new SqlParameter("@firstName", customer.firstName),
-                    new SqlParameter("@lastName", customer.lastName)
+                    new SqlParameter("@lastName", customer.lastName),
+                    new SqlParameter("@addressId", customer.address.addressId)
                 };
                 return PostProcedure(connection, "usp_postCustomer", parameters);
             }
-        }
-
-        public SqlDataReader GetProcedure(SqlConnection connection, string procedure, List<SqlParameter>? parameters)
-        {
-            SqlCommand cmd = new SqlCommand(procedure, connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            if (parameters != null && parameters.Count > 0)
-            {
-                foreach (SqlParameter parameter in parameters)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
-            }
-            connection.Open();
-            return cmd.ExecuteReader();
-        }
-
-        public bool PostProcedure(SqlConnection connection, string procedure, List<SqlParameter> parameters)
-        {
-            SqlCommand cmd = new SqlCommand(procedure, connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-
-            if (parameters != null && parameters.Count > 0)
-            {
-                foreach (SqlParameter parameter in parameters)
-                {
-                    cmd.Parameters.Add(parameter);
-                }
-            }
-            else
-            {
-                return false; // Can't insert with no parameters
-            }
-            connection.Open();
-            return (cmd.ExecuteNonQuery() > 0) ? true : false;
         }
     }
 }
