@@ -1,6 +1,7 @@
 ﻿@page "/customers"
 
 @inject CustomerService CustomerService
+@inject CustomerService CustomerService
 
 <h1>Kunder</h1>
 <button @onclick="TryInsertCustomer">TryInsertCustomer()</button>
@@ -42,23 +43,24 @@
 </div>
 
 @code {
-    private Customer[] customers;
+        private Customer[] customers;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await Task.Run(() => { customers = CustomerService.GetCustomers(); });
-    }
-
-    void TryInsertCustomer()
-    {
-        Customer customer = new Customer()
+        protected override async Task OnInitializedAsync()
         {
-            firstName = "Lars",
-            lastName = "Larsen"
+            await Task.Run(() => { customers = CustomerService.GetCustomers(); });
+        }
+
+        void TryInsertCustomer()
+        {
+            Customer customer = new Customer()
+            {
+                firstName = "Lars",
+                lastName = "Larsen",
+                address = customers[1].address
         };
         if (CustomerService.PostCustomer(customer))
         {
             customers = CustomerService.GetCustomers();
         }
-    }
+}
 }
