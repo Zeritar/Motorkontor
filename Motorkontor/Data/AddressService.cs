@@ -25,7 +25,8 @@ namespace Motorkontor.Data
                     addresses.Add(new Address(Convert.ToInt32(reader["AddressId"]))
                     {
                         streetAndNo = reader["StreetAndNo"].ToString(),
-                        zipCode = zipCodeService.GetZipCodeById(Convert.ToInt32(reader["FK_ZipcodeId"].ToString()))
+                        zipCode = zipCodeService.GetZipCodeById(Convert.ToInt32(reader["FK_ZipcodeId"].ToString())),
+                        createDate = (DateTime)reader["CreateDate"]
                     });
                 }
             }
@@ -49,7 +50,8 @@ namespace Motorkontor.Data
                     addresses.Add(new Address(Convert.ToInt32(reader["AddressId"]))
                     {
                         streetAndNo = reader["StreetAndNo"].ToString(),
-                        zipCode = zipCodeService.GetZipCodeById(Convert.ToInt32(reader["FK_ZipcodeId"].ToString()))
+                        zipCode = zipCodeService.GetZipCodeById(Convert.ToInt32(reader["FK_ZipcodeId"].ToString())),
+                        createDate = (DateTime)reader["CreateDate"]
                     });
                 }
             }
@@ -65,8 +67,8 @@ namespace Motorkontor.Data
             {
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
-                    new SqlParameter("@@streetAndNo", address.streetAndNo),
-                    new SqlParameter("@@zipcodeId", address.zipCode.zipCodeId)
+                    new SqlParameter("@streetAndNo", address.streetAndNo),
+                    new SqlParameter("@zipcodeId", address.zipCode.zipCodeId)
                 };
                 return PostProcedure(connection, "usp_postAddress", parameters);
             }

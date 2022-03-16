@@ -1,0 +1,53 @@
+﻿@page "/categories"
+
+@inject CategoryService CategoryService
+
+<h1>Kategorier</h1>
+<button @onclick="TryInsertCategory">TryInsertCategory()</button>
+<div>
+    @if (categories == null)
+    {
+        <p><em>Henter...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kategori ID</th>
+                    <th>Kategori Navn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in categories)
+                {
+                <tr>
+                    <td>@category.categoryId</td>
+                    <td>@category.categoryName</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private Category[] categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => { categories = CategoryService.GetCategories(); });
+    }
+
+    void TryInsertCategory()
+    {
+        Category category = new Category()
+        {
+            categoryName = "Station Wagon"
+        };
+        if (CategoryService.PostCategory(category))
+        {
+            categories = CategoryService.GetCategories();
+        }
+    }
+}

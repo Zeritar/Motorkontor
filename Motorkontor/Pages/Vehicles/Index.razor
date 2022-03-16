@@ -1,0 +1,64 @@
+﻿@page "/vehicles"
+
+@inject VehicleService VehicleService
+
+<h1>Køretøjer</h1>
+<button @onclick="TryInsertVehicle">TryInsertVehicle()</button>
+<div>
+    @if (vehicles == null)
+    {
+        <p><em>Henter...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Køretøj ID</th>
+                    <th>Fabrikant</th>
+                    <th>Model</th>
+                    <th>Kategori</th>
+                    <th>Brændstof</th>
+                    <th>Dato Oprettet</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vehicle in vehicles)
+                {
+                <tr>
+                    <td>@vehicle.vehicleId</td>
+                    <td>@vehicle.make</td>
+                    <td>@vehicle.model</td>
+                    <td>@vehicle.category.categoryName</td>
+                    <td>@vehicle.fuel.fuelName</td>
+                    <td>@vehicle.createDate.ToShortDateString()</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private Vehicle[] vehicles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => { vehicles = VehicleService.GetVehicles(); });
+    }
+
+    void TryInsertVehicle()
+    {
+        Vehicle vehicle = new Vehicle()
+        {
+            make = "Skoda",
+            model = "Fabia",
+            category = vehicles[0].category,
+            fuel = vehicles[0].fuel
+        };
+        if (VehicleService.PostVehicle(vehicle))
+        {
+            vehicles = VehicleService.GetVehicles();
+        }
+    }
+}

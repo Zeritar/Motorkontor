@@ -1,0 +1,56 @@
+﻿@page "/zipcodes"
+
+@inject ZipCodeService ZipCodeService
+
+<h1>Postnumre</h1>
+<button @onclick="TryInsertZipCode">TryInsertZipCode()</button>
+<div>
+    @if (zipCodes == null)
+    {
+        <p><em>Henter...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Postnummer ID</th>
+                    <th>Postnummer</th>
+                    <th>Bynavn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var zipCode in zipCodes)
+                {
+                <tr>
+                    <td>@zipCode.zipCodeId</td>
+                    <td>@zipCode.zipCodeName</td>
+                    <td>@zipCode.cityName</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private ZipCode[] zipCodes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => { zipCodes = ZipCodeService.GetZipCodes(); });
+    }
+
+    void TryInsertZipCode()
+    {
+        ZipCode zipCode = new ZipCode()
+        {
+            zipCodeName = "2300",
+            cityName = "København S"
+        };
+        if (ZipCodeService.PostZipCode(zipCode))
+        {
+            zipCodes = ZipCodeService.GetZipCodes();
+        }
+    }
+}

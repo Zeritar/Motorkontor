@@ -31,6 +31,10 @@ namespace Motorkontor
             services.AddSingleton<CustomerService>();
             services.AddSingleton<ZipCodeService>();
             services.AddSingleton<AddressService>();
+            services.AddSingleton<FuelService>();
+            services.AddSingleton<VehicleService>();
+            services.AddSingleton<RegistrationService>();
+            services.AddSingleton<CategoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

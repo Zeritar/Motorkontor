@@ -1,0 +1,53 @@
+﻿@page "/fuels"
+
+@inject FuelService FuelService
+
+<h1>Brændstoffer</h1>
+<button @onclick="TryInsertFuel">TryInsertFuel()</button>
+<div>
+    @if (fuels == null)
+    {
+        <p><em>Henter...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Brændstof ID</th>
+                    <th>Brændstof Navn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fuel in fuels)
+                {
+                <tr>
+                    <td>@fuel.fuelId</td>
+                    <td>@fuel.fuelName</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private Fuel[] fuels;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => { fuels = FuelService.GetFuels(); });
+    }
+
+    void TryInsertFuel()
+    {
+        Fuel fuel = new Fuel()
+        {
+            fuelName = "Hydrogen"
+        };
+        if (FuelService.PostFuel(fuel))
+        {
+            fuels = FuelService.GetFuels();
+        }
+    }
+}

@@ -22,7 +22,7 @@ namespace Motorkontor.Data
 
                 while (reader.Read())
                 {
-                    customers.Add(new Customer(Convert.ToInt32(reader["customerId"]))
+                    customers.Add(new Customer(Convert.ToInt32(reader["CustomerId"]))
                     {
                         firstName = reader["FirstName"].ToString(),
                         lastName = reader["LastName"].ToString(),
@@ -32,6 +32,35 @@ namespace Motorkontor.Data
                 }
             }
             return customers.ToArray();
+        }
+
+        public Customer GetCustomerById(int id)
+        {
+            List<Customer> customers = new List<Customer>();
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@customerId", id)
+                };
+
+                SqlDataReader reader = GetProcedure(connection, "usp_readCustomerById", parameters);
+
+                while (reader.Read())
+                {
+                    customers.Add(new Customer(Convert.ToInt32(reader["CustomerId"]))
+                    {
+                        firstName = reader["FirstName"].ToString(),
+                        lastName = reader["LastName"].ToString(),
+                        createDate = (DateTime)reader["CreateDate"],
+                        address = addressService.GetAddresseById(Convert.ToInt32(reader["FK_AddressId"].ToString()))
+                    });
+                }
+            }
+            if (customers.Count > 0)
+                return customers[0];
+
+            return null;
         }
 
         public bool PostCustomer(Customer customer)

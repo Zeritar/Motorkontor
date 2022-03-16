@@ -1,0 +1,59 @@
+﻿@page "/registrations"
+
+@inject RegistrationService RegistrationService
+
+<h1>Registreringer</h1>
+<button @onclick="TryInsertRegistration">TryInsertRegistration()</button>
+<div>
+    @if (registrations == null)
+    {
+        <p><em>Henter...</em></p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Registrering ID</th>
+                    <th>Kunde</th>
+                    <th>Køretøj</th>
+                    <th>Første Indregistreringsdato</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var registration in registrations)
+                {
+                <tr>
+                    <td>@registration.registrationId</td>
+                    <td>@registration.customer.firstName @registration.customer.lastName</td>
+                    <td>@registration.vehicle.make @registration.vehicle.model</td>
+                    <td>@registration.firstRegistrationDate.ToShortDateString()</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private Registration[] registrations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => { registrations = RegistrationService.GetRegistrations(); });
+    }
+
+    void TryInsertRegistration()
+    {
+        Registration registration = new Registration()
+        {
+            customer = registrations[2].customer,
+            vehicle = registrations[1].vehicle,
+            firstRegistrationDate = registrations[1].firstRegistrationDate
+        };
+        if (RegistrationService.PostRegistration(registration))
+        {
+            registrations = RegistrationService.GetRegistrations();
+        }
+    }
+}
