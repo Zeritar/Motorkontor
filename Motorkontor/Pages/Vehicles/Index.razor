@@ -4,6 +4,8 @@
 
 <h1>Køretøjer</h1>
 <button @onclick="TryInsertVehicle">TryInsertVehicle()</button>
+<button @onclick="TryUpdateVehicle">TryUpdateVehicle()</button>
+<button @onclick="TryDeleteVehicle">TryDeleteVehicle()</button>
 <div>
     @if (vehicles == null)
     {
@@ -57,6 +59,32 @@
             fuel = vehicles[0].fuel
         };
         if (VehicleService.PostVehicle(vehicle))
+        {
+            vehicles = VehicleService.GetVehicles();
+        }
+    }
+
+    void TryUpdateVehicle()
+    {
+        if (vehicles == null)
+            return;
+
+        Vehicle vehicle = vehicles[1];
+        vehicle.make = "Citroen";
+        vehicle.model = "Berlingo";
+        if (VehicleService.UpdateVehicle(vehicle))
+        {
+            vehicles = VehicleService.GetVehicles();
+        }
+    }
+
+    void TryDeleteVehicle()
+    {
+        if (vehicles == null || vehicles.Length < 4)
+            return;
+
+        Vehicle vehicle = vehicles[3];
+        if (VehicleService.DropVehicle(vehicle))
         {
             vehicles = VehicleService.GetVehicles();
         }

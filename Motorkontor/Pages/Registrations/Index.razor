@@ -4,6 +4,8 @@
 
 <h1>Registreringer</h1>
 <button @onclick="TryInsertRegistration">TryInsertRegistration()</button>
+<button @onclick="TryUpdateRegistration">TryUpdateRegistration()</button>
+<button @onclick="TryDeleteRegistration">TryDeleteRegistration()</button>
 <div>
     @if (registrations == null)
     {
@@ -52,6 +54,33 @@
             firstRegistrationDate = registrations[1].firstRegistrationDate
         };
         if (RegistrationService.PostRegistration(registration))
+        {
+            registrations = RegistrationService.GetRegistrations();
+        }
+    }
+
+    void TryUpdateRegistration()
+    {
+        if (registrations == null)
+            return;
+
+        Registration registration = registrations[1];
+        registration.customer = registrations[0].customer;
+
+        if (RegistrationService.UpdateRegistration(registration))
+        {
+            registrations = RegistrationService.GetRegistrations();
+        }
+    }
+
+    void TryDeleteRegistration()
+    {
+        if (registrations == null || registrations.Length < 4)
+            return;
+
+        Registration registration = registrations[3];
+
+        if (RegistrationService.DropRegistration(registration))
         {
             registrations = RegistrationService.GetRegistrations();
         }

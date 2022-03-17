@@ -76,5 +76,40 @@ namespace Motorkontor.Data
                 return PostProcedure(connection, "usp_postCustomer", parameters);
             }
         }
+
+        public bool UpdateCustomer(Customer customer)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (customer.customerID < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@customerId", customer.customerID),
+                    new SqlParameter("@firstName", customer.firstName),
+                    new SqlParameter("@lastName", customer.lastName),
+                    new SqlParameter("@addressId", customer.address.addressId)
+                };
+                return PostProcedure(connection, "usp_updateCustomer", parameters);
+            }
+        }
+
+        public bool DropCustomer(Customer customer)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (customer.customerID < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@customerId", customer.customerID)
+                };
+                return PostProcedure(connection, "usp_dropCustomer", parameters);
+            }
+        }
     }
 }

@@ -4,6 +4,8 @@
 
 <h1>Adresser</h1>
 <button @onclick="TryInsertAddress">TryInsertAddress()</button>
+<button @onclick="TryUpdateAddress">TryUpdateAddress()</button>
+<button @onclick="TryDeleteAddress">TryDeleteAddress()</button>
 <div>
     @if (addresses == null)
     {
@@ -38,23 +40,48 @@
 </div>
 
 @code {
-        private Address[] addresses;
+    private Address[] addresses;
 
-        protected override async Task OnInitializedAsync()
-        {
-            await Task.Run(() => { addresses = AddressService.GetAddresses(); });
-        }
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => { addresses = AddressService.GetAddresses(); });
+    }
 
-        void TryInsertAddress()
+    void TryInsertAddress()
+    {
+        Address address = new Address()
         {
-            Address address = new Address()
-            {
-                streetAndNo = "Nygade 42",
-                zipCode = addresses[1].zipCode
+            streetAndNo = "Nygade 42",
+            zipCode = addresses[1].zipCode
         };
         if (AddressService.PostAddress(address))
         {
             addresses = AddressService.GetAddresses();
         }
-}
+    }
+
+    void TryUpdateAddress()
+    {
+        if (addresses == null)
+            return;
+
+        Address address = addresses[1];
+        address.streetAndNo = "Bagværksvej 102";
+        if (AddressService.UpdateAddress(address))
+        {
+            addresses = AddressService.GetAddresses();
+        }
+    }
+
+    void TryDeleteAddress()
+    {
+        if (addresses == null || addresses.Length < 4)
+            return;
+
+        Address address = addresses[3];
+        if (AddressService.DropAddress(address))
+        {
+            addresses = AddressService.GetAddresses();
+        }
+    }
 }

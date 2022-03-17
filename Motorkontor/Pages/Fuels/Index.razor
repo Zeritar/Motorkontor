@@ -4,6 +4,8 @@
 
 <h1>Brændstoffer</h1>
 <button @onclick="TryInsertFuel">TryInsertFuel()</button>
+<button @onclick="TryUpdateFuel">TryUpdateFuel()</button>
+<button @onclick="TryDeleteFuel">TryDeleteFuel()</button>
 <div>
     @if (fuels == null)
     {
@@ -46,6 +48,32 @@
             fuelName = "Hydrogen"
         };
         if (FuelService.PostFuel(fuel))
+        {
+            fuels = FuelService.GetFuels();
+        }
+    }
+
+    void TryUpdateFuel()
+    {
+        if (fuels == null)
+            return;
+
+        Fuel fuel = fuels[1];
+        fuel.fuelName = "Deisel";
+
+        if (FuelService.UpdateFuel(fuel))
+        {
+            fuels = FuelService.GetFuels();
+        }
+    }
+
+    void TryDeleteFuel()
+    {
+        if (fuels == null || fuels.Length < 4)
+            return;
+
+        Fuel fuel = fuels[3];
+        if (FuelService.DropFuel(fuel))
         {
             fuels = FuelService.GetFuels();
         }

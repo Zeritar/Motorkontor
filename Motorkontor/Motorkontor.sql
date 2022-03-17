@@ -111,7 +111,7 @@ CREATE PROCEDURE usp_updateCustomer
 )
 AS
 BEGIN
-UPDATE Customer SET FirstName = @firstName, LastName = @lastName, FK_AddressId = @addressId, CreateDate = GETDATE()
+UPDATE Customer SET FirstName = @firstName, LastName = @lastName, FK_AddressId = @addressId
 WHERE CustomerId = @customerId
 END
 GO

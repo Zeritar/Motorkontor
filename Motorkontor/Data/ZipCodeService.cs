@@ -64,5 +64,39 @@ namespace Motorkontor.Data
                 return PostProcedure(connection, "usp_postZipcode", parameters);
             }
         }
+
+        public bool UpdateZipCode(ZipCode zipCode)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (zipCode.zipCodeId < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@zipcodeId", zipCode.zipCodeId),
+                    new SqlParameter("@zipcodeName", zipCode.zipCodeName),
+                    new SqlParameter("@cityName", zipCode.cityName)
+                };
+                return PostProcedure(connection, "usp_updateZipcode", parameters);
+            }
+        }
+
+        public bool DropZipCode(ZipCode zipCode)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (zipCode.zipCodeId < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@zipcodeId", zipCode.zipCodeId)
+                };
+                return PostProcedure(connection, "usp_dropZipcode", parameters);
+            }
+        }
     }
 }

@@ -56,9 +56,42 @@ namespace Motorkontor.Data
             {
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
-                    new SqlParameter("@categoryName", category.categoryName),
+                    new SqlParameter("@categoryName", category.categoryName)
                 };
                 return PostProcedure(connection, "usp_postCategory", parameters);
+            }
+        }
+
+        public bool UpdateCategory(Category category)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (category.categoryId < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@categoryId", category.categoryId),
+                    new SqlParameter("@categoryName", category.categoryName)
+                };
+                return PostProcedure(connection, "usp_updateCategory", parameters);
+            }
+        }
+
+        public bool DropCategory(Category category)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (category.categoryId < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@categoryId", category.categoryId)
+                };
+                return PostProcedure(connection, "usp_dropCategory", parameters);
             }
         }
     }

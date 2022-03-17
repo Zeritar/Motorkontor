@@ -4,6 +4,8 @@
 
 <h1>Postnumre</h1>
 <button @onclick="TryInsertZipCode">TryInsertZipCode()</button>
+<button @onclick="TryUpdateZipCode">TryUpdateZipCode()</button>
+<button @onclick="TryDeleteZipCode">TryDeleteZipCode()</button>
 <div>
     @if (zipCodes == null)
     {
@@ -49,6 +51,34 @@
             cityName = "København S"
         };
         if (ZipCodeService.PostZipCode(zipCode))
+        {
+            zipCodes = ZipCodeService.GetZipCodes();
+        }
+    }
+
+    void TryUpdateZipCode()
+    {
+        if (zipCodes == null)
+            return;
+
+        ZipCode zipCode = zipCodes[1];
+
+        zipCode.zipCodeName = "5000";
+        zipCode.cityName = "Odense";
+        if (ZipCodeService.UpdateZipCode(zipCode))
+        {
+            zipCodes = ZipCodeService.GetZipCodes();
+        }
+    }
+
+    void TryDeleteZipCode()
+    {
+        if (zipCodes == null || zipCodes.Length < 4)
+            return;
+
+        ZipCode zipCode = zipCodes[3];
+
+        if (ZipCodeService.DropZipCode(zipCode))
         {
             zipCodes = ZipCodeService.GetZipCodes();
         }

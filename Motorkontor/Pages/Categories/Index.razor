@@ -4,6 +4,8 @@
 
 <h1>Kategorier</h1>
 <button @onclick="TryInsertCategory">TryInsertCategory()</button>
+<button @onclick="TryUpdateCategory">TryUpdateCategory()</button>
+<button @onclick="TryDeleteCategory">TryDeleteCategory()</button>
 <div>
     @if (categories == null)
     {
@@ -46,6 +48,32 @@
             categoryName = "Station Wagon"
         };
         if (CategoryService.PostCategory(category))
+        {
+            categories = CategoryService.GetCategories();
+        }
+    }
+
+    void TryUpdateCategory()
+    {
+        if (categories == null)
+            return;
+
+        Category category = categories[1];
+        category.categoryName = "Hunchback";
+
+        if (CategoryService.UpdateCategory(category))
+        {
+            categories = CategoryService.GetCategories();
+        }
+    }
+
+    void TryDeleteCategory()
+    {
+        if (categories == null || categories.Length < 4)
+            return;
+
+        Category category = categories[3];
+        if (CategoryService.DropCategory(category))
         {
             categories = CategoryService.GetCategories();
         }

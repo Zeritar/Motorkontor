@@ -56,9 +56,42 @@ namespace Motorkontor.Data
             {
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
-                    new SqlParameter("@fuelName", fuel.fuelName),
+                    new SqlParameter("@fuelName", fuel.fuelName)
                 };
                 return PostProcedure(connection, "usp_postFuel", parameters);
+            }
+        }
+
+        public bool UpdateFuel(Fuel fuel)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (fuel.fuelId < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@fuelId", fuel.fuelId),
+                    new SqlParameter("@fuelName", fuel.fuelName)
+                };
+                return PostProcedure(connection, "usp_updateFuel", parameters);
+            }
+        }
+
+        public bool DropFuel(Fuel fuel)
+        {
+            // No need to bother the database if the object didn't originate there. Newly created objects have an ID of 0
+            if (fuel.fuelId < 1)
+                return false;
+
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@fuelId", fuel.fuelId)
+                };
+                return PostProcedure(connection, "usp_dropFuel", parameters);
             }
         }
     }

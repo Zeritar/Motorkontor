@@ -78,5 +78,32 @@ namespace Motorkontor.Data
                 return PostProcedure(connection, "usp_postRegistration", parameters);
             }
         }
+
+        public bool UpdateRegistration(Registration registration)
+        {
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@registrationId", registration.registrationId),
+                    new SqlParameter("@firstRegistrationDate", registration.firstRegistrationDate),
+                    new SqlParameter("@customerId", registration.customer.customerID),
+                    new SqlParameter("@vehicleId", registration.vehicle.vehicleId)
+                };
+                return PostProcedure(connection, "usp_updateRegistration", parameters);
+            }
+        }
+
+        public bool DropRegistration(Registration registration)
+        {
+            using (SqlConnection connection = new SqlConnection(connStr))
+            {
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                {
+                    new SqlParameter("@registrationId", registration.registrationId)
+                };
+                return PostProcedure(connection, "usp_dropRegistration", parameters);
+            }
+        }
     }
 }

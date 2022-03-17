@@ -4,6 +4,8 @@
 
 <h1>Kunder</h1>
 <button @onclick="TryInsertCustomer">TryInsertCustomer()</button>
+<button @onclick="TryUpdateCustomer">TryUpdateCustomer()</button>
+<button @onclick="TryDeleteCustomer">TryDeleteCustomer()</button>
 <div>
     @if (customers == null)
     {
@@ -42,24 +44,51 @@
 </div>
 
 @code {
-        private Customer[] customers;
+    private Customer[] customers;
 
-        protected override async Task OnInitializedAsync()
-        {
-            await Task.Run(() => { customers = CustomerService.GetCustomers(); });
-        }
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() => { customers = CustomerService.GetCustomers(); });
+    }
 
-        void TryInsertCustomer()
+    void TryInsertCustomer()
+    {
+        Customer customer = new Customer()
         {
-            Customer customer = new Customer()
-            {
-                firstName = "Lars",
-                lastName = "Larsen",
-                address = customers[1].address
+            firstName = "Lars",
+            lastName = "Larsen",
+            address = customers[1].address
         };
         if (CustomerService.PostCustomer(customer))
         {
             customers = CustomerService.GetCustomers();
         }
-}
+    }
+
+    void TryUpdateCustomer()
+    {
+        if (customers == null)
+            return;
+
+        Customer customer = customers[1];
+        customer.firstName = "John";
+
+        if (CustomerService.UpdateCustomer(customer))
+        {
+            customers = CustomerService.GetCustomers();
+        }
+    }
+
+    void TryDeleteCustomer()
+    {
+        if (customers == null || customers.Length < 4)
+            return;
+
+        Customer customer = customers[3];
+
+        if (CustomerService.DropCustomer(customer))
+        {
+            customers = CustomerService.GetCustomers();
+        }
+    }
 }
