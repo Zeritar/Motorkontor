@@ -7,7 +7,7 @@
 .banner {
     overflow: auto;
     background-color: #f7f7f7;
-    height: calc(48px + 20px);
+    height: 68px;
     overflow: hidden;
     padding: 10px 20px;
     border-bottom: solid #a49390 1px;

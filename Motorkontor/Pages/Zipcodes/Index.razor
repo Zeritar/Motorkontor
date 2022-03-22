@@ -6,7 +6,12 @@
 <button @onclick="TryInsertZipCode">TryInsertZipCode()</button>
 <button @onclick="TryUpdateZipCode">TryUpdateZipCode()</button>
 <button @onclick="TryDeleteZipCode">TryDeleteZipCode()</button>
+<button @onclick="() => ToggleDetailWindow(0)">Nyt Postnummer</button>
 <div>
+    @if (detailWindow)
+            {
+                <DetailWindow detailModel=@detailModel Title="Postnummer" OnClickCallback="() => ToggleDetailWindow(0)"/>
+            }
     @if (zipCodes == null)
     {
         <p><em>Henter...</em></p>
@@ -24,7 +29,7 @@
             <tbody>
                 @foreach (var zipCode in zipCodes)
                 {
-                <tr>
+                <tr class="clickable" @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">
                     <td>@zipCode.zipCodeId</td>
                     <td>@zipCode.zipCodeName</td>
                     <td>@zipCode.cityName</td>
@@ -37,6 +42,8 @@
 
 @code {
     private ZipCode[] zipCodes;
+    private bool detailWindow = false;
+    private IDetailModel detailModel;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,5 +89,18 @@
         {
             zipCodes = ZipCodeService.GetZipCodes();
         }
+    }
+
+    void ToggleDetailWindow(int id)
+    {
+        if (!detailWindow)
+            if (id != 0)
+                detailModel = zipCodes.Where(e => e.zipCodeId == id).FirstOrDefault();
+            else
+                detailModel = new ZipCode();
+        else
+            detailModel = null;
+        detailWindow = !detailWindow;
+
     }
 }

@@ -1,0 +1,32 @@
+﻿<div class="detailwindow">
+    <h3>Detaljer for @Title</h3>
+    <button class="closeDetail" @onclick="OnClickCallback">Luk</button>
+    @if (detailModel != null)
+    {
+    <table>
+        <tr>
+            @foreach (var field in detailModel.GetFields())
+            {
+                <td>@field.Key.Text</td>
+            }
+        </tr>
+        <tr>
+            @foreach (var field in detailModel.GetFields())
+            {
+                <td>@field.Value</td>
+            }
+        </tr>
+
+    </table>
+    }
+</div>
+@code {
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public IDetailModel detailModel { get; set; }
+}
