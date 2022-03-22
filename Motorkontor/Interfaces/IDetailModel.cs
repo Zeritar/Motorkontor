@@ -6,6 +6,8 @@ namespace Motorkontor.Data
     {
         public Dictionary<Field, string> GetFields();
         public void UpdateFields(Dictionary<Field, string> fields);
+        public int GetId();
+        public void SetDeleted(bool deleted);
     }
 
     public class Field

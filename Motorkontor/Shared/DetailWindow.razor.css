@@ -19,6 +19,39 @@
     right: 10px;
 }
 
+.saveDetail {
+    width: 48px;
+    height: 32px;
+    position: absolute;
+    right: calc(((10px + 48px) * 2) + 10px);
+}
+
+.deleteDetail {
+    width: 48px;
+    height: 32px;
+    position: absolute;
+    right: calc(10px + 48px + 10px);
+}
+
+.detailInput {
+    width: calc(100vw - 300px - 68px);
+    max-width: 300px;
+}
+
+.detailInput p {
+    margin-bottom: 5px;
+}
+
+.detailInput .detailID {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.detailInput input {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
 table {
     display: flex;
     flex-direction: column;

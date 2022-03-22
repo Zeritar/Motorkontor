@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System;
 
 namespace Motorkontor.Data
 {
     public class DbService
     {
-        public string connStr = @"Data Source=.\sqlh2;Initial Catalog=Motorkontor;Integrated Security=True;TrustServerCertificate=True";
+        public string connStr = @"Data Source=.\SQLEXPRESS;Initial Catalog=Motorkontor;Integrated Security=True;TrustServerCertificate=True";
 
         public SqlDataReader GetProcedure(SqlConnection connection, string procedure, List<SqlParameter>? parameters)
         {
@@ -26,22 +27,30 @@ namespace Motorkontor.Data
 
         public bool PostProcedure(SqlConnection connection, string procedure, List<SqlParameter> parameters)
         {
-            SqlCommand cmd = new SqlCommand(procedure, connection);
-            cmd.CommandType = CommandType.StoredProcedure;
+            try
+            {
+                SqlCommand cmd = new SqlCommand(procedure, connection);
+                cmd.CommandType = CommandType.StoredProcedure;
 
-            if (parameters != null && parameters.Count > 0)
-            {
-                foreach (SqlParameter parameter in parameters)
+                if (parameters != null && parameters.Count > 0)
                 {
-                    cmd.Parameters.Add(parameter);
+                    foreach (SqlParameter parameter in parameters)
+                    {
+                        cmd.Parameters.Add(parameter);
+                    }
                 }
+                else
+                {
+                    return false; // Can't insert with no parameters
+                }
+                connection.Open();
+                return (cmd.ExecuteNonQuery() > 0) ? true : false;
             }
-            else
+            catch (Exception e)
             {
-                return false; // Can't insert with no parameters
+                System.Diagnostics.Debug.WriteLine(e.Message);
+                return false;
             }
-            connection.Open();
-            return (cmd.ExecuteNonQuery() > 0) ? true : false;
         }
     }
 }

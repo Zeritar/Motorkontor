@@ -3,14 +3,14 @@
 @inject ZipCodeService ZipCodeService
 
 <h1>Postnumre</h1>
-<button @onclick="TryInsertZipCode">TryInsertZipCode()</button>
+@*<button @onclick="TryInsertZipCode">TryInsertZipCode()</button>
 <button @onclick="TryUpdateZipCode">TryUpdateZipCode()</button>
-<button @onclick="TryDeleteZipCode">TryDeleteZipCode()</button>
+<button @onclick="TryDeleteZipCode">TryDeleteZipCode()</button>*@
 <button @onclick="() => ToggleDetailWindow(0)">Nyt Postnummer</button>
 <div>
     @if (detailWindow)
             {
-                <DetailWindow detailModel=@detailModel Title="Postnummer" OnClickCallback="() => ToggleDetailWindow(0)"/>
+                <DetailWindow detailModel=@detailModel Title="Postnummer" OnCloseClickCallback="() => ToggleDetailWindow(0)" OnSaveClickCallback="() => GotSaved()"/>
             }
     @if (zipCodes == null)
     {
@@ -29,10 +29,10 @@
             <tbody>
                 @foreach (var zipCode in zipCodes)
                 {
-                <tr class="clickable" @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">
-                    <td>@zipCode.zipCodeId</td>
-                    <td>@zipCode.zipCodeName</td>
-                    <td>@zipCode.cityName</td>
+                <tr class="clickable">
+                    <td @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">@zipCode.zipCodeId</td>
+                    <td @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">@zipCode.zipCodeName</td>
+                    <td @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">@zipCode.cityName</td>
                 </tr>
                 }
             </tbody>
@@ -43,7 +43,7 @@
 @code {
     private ZipCode[] zipCodes;
     private bool detailWindow = false;
-    private IDetailModel detailModel;
+    private ZipCode detailModel;
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,10 +97,44 @@
             if (id != 0)
                 detailModel = zipCodes.Where(e => e.zipCodeId == id).FirstOrDefault();
             else
+            {
                 detailModel = new ZipCode();
+            }
+
         else
             detailModel = null;
         detailWindow = !detailWindow;
 
+    }
+
+    public async Task GotSaved()
+    {
+        await Task.Run(() => {
+            if (detailModel.zipCodeId == 0 && detailModel.hasChanged)
+            {
+                ZipCodeService.PostZipCode(detailModel);
+            }
+            if (detailModel.deleted)
+            {
+                ZipCodeService.DropZipCode(detailModel);
+            }
+            foreach (ZipCode zipCode in zipCodes)
+            {
+                if (zipCode.hasChanged)
+                {
+                    if (zipCode.zipCodeId == 0)
+                    {
+                        ZipCodeService.PostZipCode(zipCode);
+                    }
+                    else
+                    {
+                        ZipCodeService.UpdateZipCode(zipCode);
+                    }
+
+                }
+            }
+            zipCodes = ZipCodeService.GetZipCodes();
+        });
+        ToggleDetailWindow(0);
     }
 }

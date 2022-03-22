@@ -1,32 +1,80 @@
 ﻿<div class="detailwindow">
     <h3>Detaljer for @Title</h3>
-    <button class="closeDetail" @onclick="OnClickCallback">Luk</button>
+    <button class="saveDetail" @onclick="saveClick">Gem</button>
+    <button class="deleteDetail" @onclick="deleteClick">Slet</button>
+    <button class="closeDetail" @onclick="OnCloseClickCallback">Luk</button>
     @if (detailModel != null)
     {
-    <table>
-        <tr>
+        if (fieldValues == null)
+        {
+            fieldValues = new Dictionary<string, string>();
             @foreach (var field in detailModel.GetFields())
             {
-                <td>@field.Key.Text</td>
+                fieldValues.Add(field.Key.Name, field.Value);
             }
-        </tr>
-        <tr>
-            @foreach (var field in detailModel.GetFields())
-            {
-                <td>@field.Value</td>
-            }
-        </tr>
-
-    </table>
+        }
+        @foreach (var field in detailModel.GetFields())
+        {
+            <div class="detailInput">
+                <p>@field.Key.Text</p>
+                @if (!field.Key.Text.ToLower().Contains("id"))
+                {
+                    <input id="@field.Value" value="@field.Value" @onchange="((ChangeEventArgs e) => onChange(e.Value.ToString(), field.Key.Name))">
+                }
+                else
+                {
+                    <p class="detailID">@field.Value</p>
+                }
+            </div>
+        }
     }
 </div>
 @code {
     [Parameter]
-    public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+    public EventCallback<MouseEventArgs> OnCloseClickCallback { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnSaveClickCallback { get; set; }
 
     [Parameter]
     public string Title { get; set; }
 
     [Parameter]
     public IDetailModel detailModel { get; set; }
+
+    Dictionary<string, string> fieldValues;
+
+
+    void saveClick()
+    {
+        foreach (var field in fieldValues)
+        {
+            if (field.Value == "")
+                return;
+        }
+        Dictionary<Field, string> newFields = new Dictionary<Field, string>();
+        int i = 0;
+        foreach (var field in detailModel.GetFields())
+        {
+            newFields.Add(field.Key, fieldValues[field.Key.Name]);
+            i++;
+        }
+
+        detailModel.UpdateFields(newFields);
+
+        OnSaveClickCallback.InvokeAsync();
+    }
+
+    void deleteClick()
+    {
+        if (detailModel.GetId() != 0)
+            detailModel.SetDeleted(true);
+
+        OnSaveClickCallback.InvokeAsync();
+    }
+
+    void onChange(string newString, string key)
+    {
+        fieldValues[key] = newString;
+    }
 }
