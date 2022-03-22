@@ -3,9 +3,6 @@
 @inject ZipCodeService ZipCodeService
 
 <h1>Postnumre</h1>
-@*<button @onclick="TryInsertZipCode">TryInsertZipCode()</button>
-<button @onclick="TryUpdateZipCode">TryUpdateZipCode()</button>
-<button @onclick="TryDeleteZipCode">TryDeleteZipCode()</button>*@
 <button @onclick="() => ToggleDetailWindow(0)">Nyt Postnummer</button>
 <div>
     @if (detailWindow)
@@ -21,18 +18,20 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Postnummer ID</th>
-                    <th>Postnummer</th>
-                    <th>Bynavn</th>
+                    @foreach (var field in zipCodes[0].GetFields())
+                {
+                    <th>@field.Key.Text</th>
+                }
                 </tr>
             </thead>
             <tbody>
                 @foreach (var zipCode in zipCodes)
                 {
-                <tr class="clickable">
-                    <td @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">@zipCode.zipCodeId</td>
-                    <td @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">@zipCode.zipCodeName</td>
-                    <td @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">@zipCode.cityName</td>
+                <tr class="clickable" @onclick="() => ToggleDetailWindow(zipCode.zipCodeId)">
+                    @foreach (var field in zipCode.GetFields())
+                    {
+                    <td>@field.Value</td>
+                    }
                 </tr>
                 }
             </tbody>
@@ -48,47 +47,6 @@
     protected override async Task OnInitializedAsync()
     {
         await Task.Run(() => { zipCodes = ZipCodeService.GetZipCodes(); });
-    }
-
-    void TryInsertZipCode()
-    {
-        ZipCode zipCode = new ZipCode()
-        {
-            zipCodeName = "2300",
-            cityName = "København S"
-        };
-        if (ZipCodeService.PostZipCode(zipCode))
-        {
-            zipCodes = ZipCodeService.GetZipCodes();
-        }
-    }
-
-    void TryUpdateZipCode()
-    {
-        if (zipCodes == null)
-            return;
-
-        ZipCode zipCode = zipCodes[1];
-
-        zipCode.zipCodeName = "5000";
-        zipCode.cityName = "Odense";
-        if (ZipCodeService.UpdateZipCode(zipCode))
-        {
-            zipCodes = ZipCodeService.GetZipCodes();
-        }
-    }
-
-    void TryDeleteZipCode()
-    {
-        if (zipCodes == null || zipCodes.Length < 4)
-            return;
-
-        ZipCode zipCode = zipCodes[3];
-
-        if (ZipCodeService.DropZipCode(zipCode))
-        {
-            zipCodes = ZipCodeService.GetZipCodes();
-        }
     }
 
     void ToggleDetailWindow(int id)

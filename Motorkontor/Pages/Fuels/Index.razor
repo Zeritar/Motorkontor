@@ -3,10 +3,12 @@
 @inject FuelService FuelService
 
 <h1>Brændstoffer</h1>
-<button @onclick="TryInsertFuel">TryInsertFuel()</button>
-<button @onclick="TryUpdateFuel">TryUpdateFuel()</button>
-<button @onclick="TryDeleteFuel">TryDeleteFuel()</button>
+<button @onclick="() => ToggleDetailWindow(0)">Nyt Brændstof</button>
 <div>
+    @if (detailWindow)
+    {
+        <DetailWindow detailModel=@detailModel Title="Brændstof" OnCloseClickCallback="() => ToggleDetailWindow(0)" OnSaveClickCallback="() => GotSaved()" />
+    }
     @if (fuels == null)
     {
         <p><em>Henter...</em></p>
@@ -16,17 +18,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Brændstof ID</th>
-                    <th>Brændstof Navn</th>
+                    @foreach (var field in fuels[0].GetFields())
+                    {
+                        <th>@field.Key.Text</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @foreach (var fuel in fuels)
                 {
-                <tr>
-                    <td>@fuel.fuelId</td>
-                    <td>@fuel.fuelName</td>
-                </tr>
+                    <tr class="clickable" @onclick="() => ToggleDetailWindow(fuel.fuelId)">
+                        @foreach (var field in fuel.GetFields())
+                        {
+                            <td>@field.Value</td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
@@ -35,47 +41,59 @@
 
 @code {
     private Fuel[] fuels;
+    private bool detailWindow = false;
+    private Fuel detailModel;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Run(() => { fuels = FuelService.GetFuels(); });
     }
 
-    void TryInsertFuel()
+    void ToggleDetailWindow(int id)
     {
-        Fuel fuel = new Fuel()
-        {
-            fuelName = "Hydrogen"
-        };
-        if (FuelService.PostFuel(fuel))
-        {
-            fuels = FuelService.GetFuels();
-        }
+        if (!detailWindow)
+            if (id != 0)
+                detailModel = fuels.Where(e => e.fuelId == id).FirstOrDefault();
+            else
+            {
+                detailModel = new Fuel();
+            }
+
+        else
+            detailModel = null;
+        detailWindow = !detailWindow;
+
     }
 
-    void TryUpdateFuel()
+    public async Task GotSaved()
     {
-        if (fuels == null)
-            return;
-
-        Fuel fuel = fuels[1];
-        fuel.fuelName = "Deisel";
-
-        if (FuelService.UpdateFuel(fuel))
+        await Task.Run(() =>
         {
-            fuels = FuelService.GetFuels();
-        }
-    }
+            if (detailModel.fuelId == 0 && detailModel.hasChanged)
+            {
+                FuelService.PostFuel(detailModel);
+            }
+            if (detailModel.deleted)
+            {
+                FuelService.DropFuel(detailModel);
+            }
+            foreach (Fuel fuel in fuels)
+            {
+                if (fuel.hasChanged)
+                {
+                    if (fuel.fuelId == 0)
+                    {
+                        FuelService.PostFuel(fuel);
+                    }
+                    else
+                    {
+                        FuelService.UpdateFuel(fuel);
+                    }
 
-    void TryDeleteFuel()
-    {
-        if (fuels == null || fuels.Length < 4)
-            return;
-
-        Fuel fuel = fuels[3];
-        if (FuelService.DropFuel(fuel))
-        {
+                }
+            }
             fuels = FuelService.GetFuels();
-        }
+        });
+        ToggleDetailWindow(0);
     }
 }

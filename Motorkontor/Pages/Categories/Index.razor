@@ -3,10 +3,12 @@
 @inject CategoryService CategoryService
 
 <h1>Kategorier</h1>
-<button @onclick="TryInsertCategory">TryInsertCategory()</button>
-<button @onclick="TryUpdateCategory">TryUpdateCategory()</button>
-<button @onclick="TryDeleteCategory">TryDeleteCategory()</button>
+<button @onclick="() => ToggleDetailWindow(0)">Ny Kategori</button>
 <div>
+    @if (detailWindow)
+    {
+        <DetailWindow detailModel=@detailModel Title="Kategori" OnCloseClickCallback="() => ToggleDetailWindow(0)" OnSaveClickCallback="() => GotSaved()" />
+    }
     @if (categories == null)
     {
         <p><em>Henter...</em></p>
@@ -16,17 +18,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Kategori ID</th>
-                    <th>Kategori Navn</th>
+                    @foreach (var field in categories[0].GetFields())
+                    {
+                        <th>@field.Key.Text</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @foreach (var category in categories)
                 {
-                <tr>
-                    <td>@category.categoryId</td>
-                    <td>@category.categoryName</td>
-                </tr>
+                    <tr class="clickable" @onclick="() => ToggleDetailWindow(category.categoryId)">
+                        @foreach (var field in category.GetFields())
+                        {
+                            <td>@field.Value</td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
@@ -35,47 +41,59 @@
 
 @code {
     private Category[] categories;
+    private bool detailWindow = false;
+    private Category detailModel;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Run(() => { categories = CategoryService.GetCategories(); });
     }
 
-    void TryInsertCategory()
+    void ToggleDetailWindow(int id)
     {
-        Category category = new Category()
-        {
-            categoryName = "Station Wagon"
-        };
-        if (CategoryService.PostCategory(category))
-        {
-            categories = CategoryService.GetCategories();
-        }
+        if (!detailWindow)
+            if (id != 0)
+                detailModel = categories.Where(e => e.categoryId == id).FirstOrDefault();
+            else
+            {
+                detailModel = new Category();
+            }
+
+        else
+            detailModel = null;
+        detailWindow = !detailWindow;
+
     }
 
-    void TryUpdateCategory()
+    public async Task GotSaved()
     {
-        if (categories == null)
-            return;
-
-        Category category = categories[1];
-        category.categoryName = "Hunchback";
-
-        if (CategoryService.UpdateCategory(category))
+        await Task.Run(() =>
         {
-            categories = CategoryService.GetCategories();
-        }
-    }
+            if (detailModel.categoryId == 0 && detailModel.hasChanged)
+            {
+                CategoryService.PostCategory(detailModel);
+            }
+            if (detailModel.deleted)
+            {
+                CategoryService.DropCategory(detailModel);
+            }
+            foreach (Category category in categories)
+            {
+                if (category.hasChanged)
+                {
+                    if (category.categoryId == 0)
+                    {
+                        CategoryService.PostCategory(category);
+                    }
+                    else
+                    {
+                        CategoryService.UpdateCategory(category);
+                    }
 
-    void TryDeleteCategory()
-    {
-        if (categories == null || categories.Length < 4)
-            return;
-
-        Category category = categories[3];
-        if (CategoryService.DropCategory(category))
-        {
+                }
+            }
             categories = CategoryService.GetCategories();
-        }
+        });
+        ToggleDetailWindow(0);
     }
 }

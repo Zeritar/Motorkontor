@@ -3,10 +3,12 @@
 @inject CustomerService CustomerService
 
 <h1>Kunder</h1>
-<button @onclick="TryInsertCustomer">TryInsertCustomer()</button>
-<button @onclick="TryUpdateCustomer">TryUpdateCustomer()</button>
-<button @onclick="TryDeleteCustomer">TryDeleteCustomer()</button>
+<button @onclick="() => ToggleDetailWindow(0)">Ny Kunde</button>
 <div>
+    @if (detailWindow)
+    {
+        <DetailWindow detailModel=@detailModel Title="Kunde" OnCloseClickCallback="() => ToggleDetailWindow(0)" OnSaveClickCallback="() => GotSaved()" />
+    }
     @if (customers == null)
     {
         <p><em>Henter...</em></p>
@@ -16,27 +18,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Kunde ID</th>
-                    <th>Fornavn</th>
-                    <th>Efternavn</th>
-                    <th>Adresse</th>
-                    <th>Postnummer</th>
-                    <th>By</th>
-                    <th>Dato Oprettet</th>
+                    @foreach (var field in customers[0].GetFields())
+                    {
+                        <th>@field.Key.Text</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @foreach (var customer in customers)
                 {
-                <tr>
-                    <td>@customer.customerID</td>
-                    <td>@customer.firstName</td>
-                    <td>@customer.lastName</td>
-                    <td>@customer.address.streetAndNo</td>
-                    <td>@customer.address.zipCode.zipCodeName</td>
-                    <td>@customer.address.zipCode.cityName</td>
-                    <td>@customer.createDate.ToShortDateString()</td>
-                </tr>
+                    <tr class="clickable" @onclick="() => ToggleDetailWindow(customer.customerID)">
+                        @foreach (var field in customer.GetFields())
+                        {
+                            <td>@field.Value</td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
@@ -45,50 +41,59 @@
 
 @code {
     private Customer[] customers;
+    private bool detailWindow = false;
+    private Customer detailModel;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Run(() => { customers = CustomerService.GetCustomers(); });
     }
 
-    void TryInsertCustomer()
+    void ToggleDetailWindow(int id)
     {
-        Customer customer = new Customer()
-        {
-            firstName = "Lars",
-            lastName = "Larsen",
-            address = customers[1].address
-        };
-        if (CustomerService.PostCustomer(customer))
-        {
-            customers = CustomerService.GetCustomers();
-        }
+        if (!detailWindow)
+            if (id != 0)
+                detailModel = customers.Where(e => e.customerID == id).FirstOrDefault();
+            else
+            {
+                detailModel = new Customer();
+            }
+
+        else
+            detailModel = null;
+        detailWindow = !detailWindow;
+
     }
 
-    void TryUpdateCustomer()
+    public async Task GotSaved()
     {
-        if (customers == null)
-            return;
-
-        Customer customer = customers[1];
-        customer.firstName = "John";
-
-        if (CustomerService.UpdateCustomer(customer))
+        await Task.Run(() =>
         {
+            if (detailModel.customerID == 0 && detailModel.hasChanged)
+            {
+                CustomerService.PostCustomer(detailModel);
+            }
+            if (detailModel.deleted)
+            {
+                CustomerService.DropCustomer(detailModel);
+            }
+            foreach (Customer customer in customers)
+            {
+                if (customer.hasChanged)
+                {
+                    if (customer.customerID == 0)
+                    {
+                        CustomerService.PostCustomer(customer);
+                    }
+                    else
+                    {
+                        CustomerService.UpdateCustomer(customer);
+                    }
+
+                }
+            }
             customers = CustomerService.GetCustomers();
-        }
-    }
-
-    void TryDeleteCustomer()
-    {
-        if (customers == null || customers.Length < 4)
-            return;
-
-        Customer customer = customers[3];
-
-        if (CustomerService.DropCustomer(customer))
-        {
-            customers = CustomerService.GetCustomers();
-        }
+        });
+        ToggleDetailWindow(0);
     }
 }

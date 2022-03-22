@@ -3,10 +3,12 @@
 @inject VehicleService VehicleService
 
 <h1>Køretøjer</h1>
-<button @onclick="TryInsertVehicle">TryInsertVehicle()</button>
-<button @onclick="TryUpdateVehicle">TryUpdateVehicle()</button>
-<button @onclick="TryDeleteVehicle">TryDeleteVehicle()</button>
+<button @onclick="() => ToggleDetailWindow(0)">Nyt Køretøj</button>
 <div>
+    @if (detailWindow)
+    {
+        <DetailWindow detailModel=@detailModel Title="Køretøj" OnCloseClickCallback="() => ToggleDetailWindow(0)" OnSaveClickCallback="() => GotSaved()" />
+    }
     @if (vehicles == null)
     {
         <p><em>Henter...</em></p>
@@ -16,25 +18,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Køretøj ID</th>
-                    <th>Fabrikant</th>
-                    <th>Model</th>
-                    <th>Kategori</th>
-                    <th>Brændstof</th>
-                    <th>Dato Oprettet</th>
+                    @foreach (var field in vehicles[0].GetFields())
+                    {
+                        <th>@field.Key.Text</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @foreach (var vehicle in vehicles)
                 {
-                <tr>
-                    <td>@vehicle.vehicleId</td>
-                    <td>@vehicle.make</td>
-                    <td>@vehicle.model</td>
-                    <td>@vehicle.category.categoryName</td>
-                    <td>@vehicle.fuel.fuelName</td>
-                    <td>@vehicle.createDate.ToShortDateString()</td>
-                </tr>
+                    <tr class="clickable" @onclick="() => ToggleDetailWindow(vehicle.vehicleId)">
+                        @foreach (var field in vehicle.GetFields())
+                        {
+                            <td>@field.Value</td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
@@ -43,50 +41,59 @@
 
 @code {
     private Vehicle[] vehicles;
+    private bool detailWindow = false;
+    private Vehicle detailModel;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Run(() => { vehicles = VehicleService.GetVehicles(); });
     }
 
-    void TryInsertVehicle()
+    void ToggleDetailWindow(int id)
     {
-        Vehicle vehicle = new Vehicle()
-        {
-            make = "Skoda",
-            model = "Fabia",
-            category = vehicles[0].category,
-            fuel = vehicles[0].fuel
-        };
-        if (VehicleService.PostVehicle(vehicle))
-        {
-            vehicles = VehicleService.GetVehicles();
-        }
+        if (!detailWindow)
+            if (id != 0)
+                detailModel = vehicles.Where(e => e.vehicleId == id).FirstOrDefault();
+            else
+            {
+                detailModel = new Vehicle();
+            }
+
+        else
+            detailModel = null;
+        detailWindow = !detailWindow;
+
     }
 
-    void TryUpdateVehicle()
+    public async Task GotSaved()
     {
-        if (vehicles == null)
-            return;
-
-        Vehicle vehicle = vehicles[1];
-        vehicle.make = "Citroen";
-        vehicle.model = "Berlingo";
-        if (VehicleService.UpdateVehicle(vehicle))
+        await Task.Run(() =>
         {
-            vehicles = VehicleService.GetVehicles();
-        }
-    }
+            if (detailModel.vehicleId == 0 && detailModel.hasChanged)
+            {
+                VehicleService.PostVehicle(detailModel);
+            }
+            if (detailModel.deleted)
+            {
+                VehicleService.DropVehicle(detailModel);
+            }
+            foreach (Vehicle vehicle in vehicles)
+            {
+                if (vehicle.hasChanged)
+                {
+                    if (vehicle.vehicleId == 0)
+                    {
+                        VehicleService.PostVehicle(vehicle);
+                    }
+                    else
+                    {
+                        VehicleService.UpdateVehicle(vehicle);
+                    }
 
-    void TryDeleteVehicle()
-    {
-        if (vehicles == null || vehicles.Length < 4)
-            return;
-
-        Vehicle vehicle = vehicles[3];
-        if (VehicleService.DropVehicle(vehicle))
-        {
+                }
+            }
             vehicles = VehicleService.GetVehicles();
-        }
+        });
+        ToggleDetailWindow(0);
     }
 }

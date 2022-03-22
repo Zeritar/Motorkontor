@@ -3,10 +3,12 @@
 @inject RegistrationService RegistrationService
 
 <h1>Registreringer</h1>
-<button @onclick="TryInsertRegistration">TryInsertRegistration()</button>
-<button @onclick="TryUpdateRegistration">TryUpdateRegistration()</button>
-<button @onclick="TryDeleteRegistration">TryDeleteRegistration()</button>
+<button @onclick="() => ToggleDetailWindow(0)">Ny Registrering</button>
 <div>
+    @if (detailWindow)
+    {
+        <DetailWindow detailModel=@detailModel Title="Køretøj" OnCloseClickCallback="() => ToggleDetailWindow(0)" OnSaveClickCallback="() => GotSaved()" />
+    }
     @if (registrations == null)
     {
         <p><em>Henter...</em></p>
@@ -16,21 +18,21 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Registrering ID</th>
-                    <th>Kunde</th>
-                    <th>Køretøj</th>
-                    <th>Første Indregistreringsdato</th>
+                    @foreach (var field in registrations[0].GetFields())
+                    {
+                        <th>@field.Key.Text</th>
+                    }
                 </tr>
             </thead>
             <tbody>
                 @foreach (var registration in registrations)
                 {
-                <tr>
-                    <td>@registration.registrationId</td>
-                    <td>@registration.customer.firstName @registration.customer.lastName</td>
-                    <td>@registration.vehicle.make @registration.vehicle.model</td>
-                    <td>@registration.firstRegistrationDate.ToShortDateString()</td>
-                </tr>
+                    <tr class="clickable" @onclick="() => ToggleDetailWindow(registration.registrationId)">
+                        @foreach (var field in registration.GetFields())
+                        {
+                            <td>@field.Value</td>
+                        }
+                    </tr>
                 }
             </tbody>
         </table>
@@ -39,50 +41,59 @@
 
 @code {
     private Registration[] registrations;
+    private bool detailWindow = false;
+    private Registration detailModel;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Run(() => { registrations = RegistrationService.GetRegistrations(); });
     }
 
-    void TryInsertRegistration()
+    void ToggleDetailWindow(int id)
     {
-        Registration registration = new Registration()
-        {
-            customer = registrations[2].customer,
-            vehicle = registrations[1].vehicle,
-            firstRegistrationDate = registrations[1].firstRegistrationDate
-        };
-        if (RegistrationService.PostRegistration(registration))
-        {
-            registrations = RegistrationService.GetRegistrations();
-        }
+        if (!detailWindow)
+            if (id != 0)
+                detailModel = registrations.Where(e => e.registrationId == id).FirstOrDefault();
+            else
+            {
+                detailModel = new Registration();
+            }
+
+        else
+            detailModel = null;
+        detailWindow = !detailWindow;
+
     }
 
-    void TryUpdateRegistration()
+    public async Task GotSaved()
     {
-        if (registrations == null)
-            return;
-
-        Registration registration = registrations[1];
-        registration.customer = registrations[0].customer;
-
-        if (RegistrationService.UpdateRegistration(registration))
+        await Task.Run(() =>
         {
+            if (detailModel.registrationId == 0 && detailModel.hasChanged)
+            {
+                RegistrationService.PostRegistration(detailModel);
+            }
+            if (detailModel.deleted)
+            {
+                RegistrationService.DropRegistration(detailModel);
+            }
+            foreach (Registration registration in registrations)
+            {
+                if (registration.hasChanged)
+                {
+                    if (registration.registrationId == 0)
+                    {
+                        RegistrationService.PostRegistration(registration);
+                    }
+                    else
+                    {
+                        RegistrationService.UpdateRegistration(registration);
+                    }
+
+                }
+            }
             registrations = RegistrationService.GetRegistrations();
-        }
-    }
-
-    void TryDeleteRegistration()
-    {
-        if (registrations == null || registrations.Length < 4)
-            return;
-
-        Registration registration = registrations[3];
-
-        if (RegistrationService.DropRegistration(registration))
-        {
-            registrations = RegistrationService.GetRegistrations();
-        }
+        });
+        ToggleDetailWindow(0);
     }
 }

@@ -17,7 +17,7 @@
         {
             <div class="detailInput">
                 <p>@field.Key.Text</p>
-                @if (!field.Key.Text.ToLower().Contains("id"))
+                @if (!field.Key.Text.ToLower().Contains("id") || field.Key.Text.ToLower().Contains("fk"))
                 {
                     <input id="@field.Value" value="@field.Value" @onchange="((ChangeEventArgs e) => onChange(e.Value.ToString(), field.Key.Name))">
                 }

@@ -26,7 +26,7 @@ namespace Motorkontor.Data
             Dictionary<Field, string> fields = new Dictionary<Field, string>();
             fields.Add(new Field("id","Postnummer ID"), zipCodeId.ToString());
             fields.Add(new Field(nameof(zipCodeName), "Postnummer"), Field.NullToEmpty(zipCodeName));
-            fields.Add(new Field(nameof(cityName), "By"), Field.NullToEmpty(cityName));
+            fields.Add(new Field(nameof(cityName), "Bynavn"), Field.NullToEmpty(cityName));
 
             return fields;
         }
