@@ -1,6 +1,7 @@
 ﻿@page "/registrations"
 
 @inject RegistrationService RegistrationService
+@inject ForeignKeyService ForeignKeyService
 
 <h1>Registreringer</h1>
 <button @onclick="() => ToggleDetailWindow(0)">Ny Registrering</button>
@@ -27,12 +28,19 @@
             <tbody>
                 @foreach (var registration in registrations)
                 {
-                    <tr class="clickable" @onclick="() => ToggleDetailWindow(registration.registrationId)">
-                        @foreach (var field in registration.GetFields())
+                <tr class="clickable" @onclick="() => ToggleDetailWindow(registration.registrationId)">
+                    @foreach (var field in registration.GetFields())
+                    {
+                        if (field.Key.Text.ToLower().Contains("fk"))
+                        {
+                            <td>@parseForeignKey(field.Key.Name, field.Value)</td>
+                        }
+                        else
                         {
                             <td>@field.Value</td>
                         }
-                    </tr>
+                    }
+                </tr>
                 }
             </tbody>
         </table>
@@ -95,5 +103,10 @@
             registrations = RegistrationService.GetRegistrations();
         });
         ToggleDetailWindow(0);
+    }
+
+    string parseForeignKey(string fkField, string fkID)
+    {
+        return ForeignKeyService.GetFieldFromForeignKey(fkField, fkID);
     }
 }

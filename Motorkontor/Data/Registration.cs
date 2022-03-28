@@ -30,8 +30,8 @@ namespace Motorkontor.Data
             Dictionary<Field, string> fields = new Dictionary<Field, string>();
             fields.Add(new Field("id", "Registrering ID"), registrationId.ToString());
             fields.Add(new Field(nameof(firstRegistrationDate), "Første Registreringsdato"), firstRegistrationDate.ToShortDateString());
-            fields.Add(new Field(nameof(customer), "FK_Kunde ID"), (customer != null) ? customer.customerID.ToString() : "");
-            fields.Add(new Field(nameof(vehicle), "FK_Vehicle ID"), (vehicle != null) ? vehicle.vehicleId.ToString() : "");
+            fields.Add(new Field(nameof(customer), "FK_Kunde"), (customer != null) ? customer.customerID.ToString() : "");
+            fields.Add(new Field(nameof(vehicle), "FK_Vehicle"), (vehicle != null) ? vehicle.vehicleId.ToString() : "");
             return fields;
         }
 

@@ -36,7 +36,7 @@ namespace Motorkontor.Data
             fields.Add(new Field(nameof(firstName), "Fornavn"), Field.NullToEmpty(firstName));
             fields.Add(new Field(nameof(lastName), "Efternavn"), Field.NullToEmpty(lastName));
             fields.Add(new Field(nameof(createDate), "Dato Oprettet"), createDate.ToShortDateString());
-            fields.Add(new Field(nameof(address), "FK_Adresse ID"), (address != null) ? address.addressId.ToString() : "");
+            fields.Add(new Field(nameof(address), "FK_Adresse"), (address != null) ? address.addressId.ToString() : "");
             return fields;
         }
 

@@ -13,6 +13,15 @@
     border-bottom: solid #a49390 1px;
 }
 
+.username {
+    display: flex;
+    float: right;
+    align-self: center;
+    justify-self: center;
+    height: 48px;
+    padding: 10px 0px;
+}
+
 .content {
     overflow: auto;
     width: calc(100% - 200px - 50px);

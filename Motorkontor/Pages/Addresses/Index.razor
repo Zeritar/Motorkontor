@@ -1,6 +1,7 @@
 ﻿@page "/addresses"
 
 @inject AddressService AddressService
+@inject ForeignKeyService ForeignKeyService
 
 <h1>Adresser</h1>
 <button @onclick="() => ToggleDetailWindow(0)">Ny Adresse</button>
@@ -30,7 +31,14 @@
                     <tr class="clickable" @onclick="() => ToggleDetailWindow(address.addressId)">
                         @foreach (var field in address.GetFields())
                         {
-                            <td>@field.Value</td>
+                            if (field.Key.Text.ToLower().Contains("fk"))
+                            {
+                                <td>@parseForeignKey(field.Key.Name, field.Value)</td>
+                            }
+                            else
+                            {
+                                <td>@field.Value</td>
+                            }
                         }
                     </tr>
                 }
@@ -95,5 +103,10 @@
             addresses = AddressService.GetAddresses();
         });
         ToggleDetailWindow(0);
+    }
+
+    string parseForeignKey(string fkField, string fkID)
+    {
+        return ForeignKeyService.GetFieldFromForeignKey(fkField, fkID);
     }
 }

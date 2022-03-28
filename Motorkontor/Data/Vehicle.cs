@@ -34,8 +34,8 @@ namespace Motorkontor.Data
             fields.Add(new Field(nameof(make), "Fabrikant"), Field.NullToEmpty(make));
             fields.Add(new Field(nameof(model), "Model"), Field.NullToEmpty(model));
             fields.Add(new Field(nameof(createDate), "Dato Oprettet"), createDate.ToShortDateString());
-            fields.Add(new Field(nameof(category), "FK_Kategori ID"), (category != null) ? category.categoryId.ToString() : "");
-            fields.Add(new Field(nameof(fuel), "FK_Brændstof ID"),  (fuel != null) ? fuel.fuelId.ToString() : "");
+            fields.Add(new Field(nameof(category), "FK_Kategori"), (category != null) ? category.categoryId.ToString() : "");
+            fields.Add(new Field(nameof(fuel), "FK_Brændstof"),  (fuel != null) ? fuel.fuelId.ToString() : "");
             return fields;
         }
 

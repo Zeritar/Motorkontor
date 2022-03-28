@@ -30,7 +30,7 @@ namespace Motorkontor.Data
             fields.Add(new Field("id", "Adresse ID"), addressId.ToString());
             fields.Add(new Field(nameof(streetAndNo), "Vejnavn og Husnummer"), Field.NullToEmpty(streetAndNo));
             fields.Add(new Field(nameof(createDate), "Dato Oprettet"), createDate.ToShortDateString());
-            fields.Add(new Field(nameof(zipCode), "FK_Postnummer ID"), (zipCode != null) ? zipCode.zipCodeId.ToString() : "");
+            fields.Add(new Field(nameof(zipCode), "FK_Postnummer"), (zipCode != null) ? zipCode.zipCodeId.ToString() : "");
 
             return fields;
         }

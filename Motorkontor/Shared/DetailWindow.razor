@@ -1,4 +1,6 @@
-﻿<div class="detailwindow">
+﻿@inject ForeignKeyService ForeignKeyService
+
+<div class="detailwindow">
     <h3>Detaljer for @Title</h3>
     <button class="saveDetail" @onclick="saveClick">Gem</button>
     <button class="deleteDetail" @onclick="deleteClick">Slet</button>
@@ -15,17 +17,22 @@
         }
         @foreach (var field in detailModel.GetFields())
         {
-            <div class="detailInput">
-                <p>@field.Key.Text</p>
-                @if (!field.Key.Text.ToLower().Contains("id") || field.Key.Text.ToLower().Contains("fk"))
-                {
-                    <input id="@field.Value" value="@field.Value" @onchange="((ChangeEventArgs e) => onChange(e.Value.ToString(), field.Key.Name))">
-                }
-                else
-                {
-                    <p class="detailID">@field.Value</p>
-                }
-            </div>
+<div class="detailInput">
+    <p>@field.Key.Text</p>
+    @if (!field.Key.Text.ToLower().Contains("id") && !field.Key.Text.ToLower().Contains("fk"))
+    {
+        <input id="@field.Value" value="@field.Value" @onchange="((ChangeEventArgs e) => onChange(e.Value.ToString(), field.Key.Name))">
+    }
+    else if (field.Key.Text.ToLower().Contains("fk"))
+    {
+        //<p class="detailID">@field.Value</p>
+        <p class="detailID">@parseForeignKey(field.Key.Name,field.Value)</p>
+    }
+    else
+    {
+        <p class="detailID">@field.Value</p>
+    }
+</div>
         }
     }
 </div>
@@ -76,5 +83,10 @@
     void onChange(string newString, string key)
     {
         fieldValues[key] = newString;
+    }
+
+    string parseForeignKey(string fkField, string fkID)
+    {
+        return ForeignKeyService.GetFieldFromForeignKey(fkField, fkID);
     }
 }

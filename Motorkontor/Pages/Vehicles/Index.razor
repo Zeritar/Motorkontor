@@ -1,6 +1,7 @@
 ﻿@page "/vehicles"
 
 @inject VehicleService VehicleService
+@inject ForeignKeyService ForeignKeyService
 
 <h1>Køretøjer</h1>
 <button @onclick="() => ToggleDetailWindow(0)">Nyt Køretøj</button>
@@ -27,12 +28,19 @@
             <tbody>
                 @foreach (var vehicle in vehicles)
                 {
-                    <tr class="clickable" @onclick="() => ToggleDetailWindow(vehicle.vehicleId)">
-                        @foreach (var field in vehicle.GetFields())
+                <tr class="clickable" @onclick="() => ToggleDetailWindow(vehicle.vehicleId)">
+                    @foreach (var field in vehicle.GetFields())
+                    {
+                        if (field.Key.Text.ToLower().Contains("fk"))
+                        {
+                            <td>@parseForeignKey(field.Key.Name, field.Value)</td>
+                        }
+                        else
                         {
                             <td>@field.Value</td>
                         }
-                    </tr>
+                    }
+                </tr>
                 }
             </tbody>
         </table>
@@ -95,5 +103,10 @@
             vehicles = VehicleService.GetVehicles();
         });
         ToggleDetailWindow(0);
+    }
+
+    string parseForeignKey(string fkField, string fkID)
+    {
+        return ForeignKeyService.GetFieldFromForeignKey(fkField, fkID);
     }
 }

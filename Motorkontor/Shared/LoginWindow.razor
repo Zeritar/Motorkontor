@@ -1,0 +1,56 @@
+﻿@inherits LayoutComponentBase
+@inject SessionService SessionService
+@inject LoginService LoginService
+
+<div class="page">
+    <img src="./img/auto.png" alt="Auto Kontoret" />
+    <div>
+        <label for="username">Brugernavn</label>
+        <input id="username" value="@username" @onchange="((ChangeEventArgs e) => onUsernameChange(e.Value.ToString()))">
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" value="@password" @onchange="((ChangeEventArgs e) => onPasswordChange(e.Value.ToString()))">
+    </div>
+    <button @onclick="FakeLogin">Login</button>
+</div>
+@code
+{
+    [Parameter]
+    public Session Session { get; set; }
+
+    [Parameter]
+    public EventCallback<Session> OnLoginClickCallback { get; set; }
+
+    string username = "", password = "";
+
+    void FakeLogin()
+    {
+        if (username == "" || password == "")
+            return;
+
+        Login login = LoginService.Login(username, password);
+        if (Session == null)
+        {
+            Session = new Session();
+            Session.login = new Login(1);
+            SessionService.PostSession(Session);
+        }
+        else
+        {
+            SessionService.UpdateSession(Session);
+        }
+
+        OnLoginClickCallback.InvokeAsync(Session);
+    }
+
+    void onUsernameChange(string value)
+    {
+        username = value;
+    }
+
+    void onPasswordChange(string value)
+    {
+        password = value;
+    }
+}

@@ -1,19 +1,79 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject SessionService SessionService
 
 <div class="page">
-    <div class="banner">
-        <a href=".">
-            <img src="./img/auto.png" height="48px" alt="Auto Kontoret" />
-        </a>
-    </div>
-    
 
-    <div class="main">
-        <div class="menu">
-            <NavMenu />
+    @if (guid == null)
+    {
+        <p><em>Henter...</em></p>
+    }
+    else if (guid == "" || session == null || session.hasExpired())
+    {
+        <div class="main">
+            <LoginWindow Session="@session" OnLoginClickCallback="_session => HandleLogin(_session)" />
         </div>
-        <div class="content verdana">
-            @Body
+    }
+    else
+    {
+        <div class="banner">
+            <a href=".">
+                <img src="./img/auto.png" height="48px" alt="Auto Kontoret" />
+            </a>
+            @if (session != null && !session.hasExpired())
+            {
+                <div class="username">
+                    Logget ind som: @session.login.username
+                </div>
+            }
         </div>
-    </div>
+        <div class="main">
+            <div class="menu">
+                <NavMenu />
+            </div>
+            <div class="content verdana">
+                @Body
+            </div>
+        </div>
+    }
+
 </div>
+@code
+{
+    private string guid;
+    private bool isConnected;
+    public Session session { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isConnected = true;
+            await LoadStateAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadStateAsync()
+    {
+        var result = await ProtectedLocalStorage.GetAsync<string>("guid");
+        guid = result.Success ? result.Value : "";
+        if (result.Success)
+            session = SessionService.GetSessionByGuid(guid);
+        else
+            session = new Session();
+    }
+
+    private async Task HandleLogin(Session _session)
+    {
+        session = SessionService.GetSessionByGuid(_session.gUID);
+        StateHasChanged();
+        await StoreGuid();
+    }
+
+    private async Task StoreGuid()
+    {
+        await ProtectedLocalStorage.SetAsync("guid", session.gUID);
+    }
+}

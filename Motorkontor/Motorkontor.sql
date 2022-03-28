@@ -193,7 +193,7 @@ CREATE PROCEDURE usp_readSessionByGuid
 )
 AS
 BEGIN
-SELECT SessionGuid, FK_LoginId FROM Session
+SELECT SessionGuid, FK_LoginId, StartTime FROM Session
 WHERE SessionGuid = @sessionGuid
 END
 GO
