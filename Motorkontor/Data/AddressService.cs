@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 
@@ -61,16 +62,19 @@ namespace Motorkontor.Data
             return null;
         }
 
-        public bool PostAddress(Address address)
+        public int PostAddress(Address address)
         {
             using (SqlConnection connection = new SqlConnection(connStr))
             {
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
                     new SqlParameter("@streetAndNo", address.streetAndNo),
-                    new SqlParameter("@zipcodeId", address.zipCode.zipCodeId)
+                    new SqlParameter("@zipcodeId", address.zipCode.zipCodeId),
+                    new SqlParameter("@id", SqlDbType.Int)
                 };
-                return PostProcedure(connection, "usp_postAddress", parameters);
+                parameters[parameters.Count - 1].Direction = ParameterDirection.Output;
+                PostProcedure(connection, "usp_postAddress", parameters);
+                return (int)parameters[parameters.Count - 1].Value;
             }
         }
 

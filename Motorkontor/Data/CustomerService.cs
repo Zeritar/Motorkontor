@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 
@@ -63,7 +64,7 @@ namespace Motorkontor.Data
             return null;
         }
 
-        public bool PostCustomer(Customer customer)
+        public int PostCustomer(Customer customer)
         {
             using (SqlConnection connection = new SqlConnection(connStr))
             {
@@ -71,9 +72,12 @@ namespace Motorkontor.Data
                 {
                     new SqlParameter("@firstName", customer.firstName),
                     new SqlParameter("@lastName", customer.lastName),
-                    new SqlParameter("@addressId", customer.address.addressId)
+                    new SqlParameter("@addressId", customer.address.addressId),
+                    new SqlParameter("@id", SqlDbType.Int)
                 };
-                return PostProcedure(connection, "usp_postCustomer", parameters);
+                parameters[parameters.Count - 1].Direction = ParameterDirection.Output;
+                PostProcedure(connection, "usp_postCustomer", parameters);
+                return (int)parameters[parameters.Count - 1].Value;
             }
         }
 

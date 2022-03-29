@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 
@@ -50,15 +51,18 @@ namespace Motorkontor.Data
             return null;
         }
 
-        public bool PostFuel(Fuel fuel)
+        public int PostFuel(Fuel fuel)
         {
             using (SqlConnection connection = new SqlConnection(connStr))
             {
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
-                    new SqlParameter("@fuelName", fuel.fuelName)
+                    new SqlParameter("@fuelName", fuel.fuelName),
+                    new SqlParameter("@id", SqlDbType.Int)
                 };
-                return PostProcedure(connection, "usp_postFuel", parameters);
+                parameters[parameters.Count - 1].Direction = ParameterDirection.Output;
+                PostProcedure(connection, "usp_postFuel", parameters);
+                return (int)parameters[parameters.Count - 1].Value;
             }
         }
 

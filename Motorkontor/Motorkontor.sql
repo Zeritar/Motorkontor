@@ -94,11 +94,14 @@ CREATE PROCEDURE usp_postCustomer
 (
 	@firstName nvarchar(50),
 	@lastName nvarchar(50),
-	@addressId int
+	@addressId int,
+	@id int output
 )
 AS
 BEGIN
 INSERT INTO Customer(FirstName, LastName, FK_AddressId, CreateDate) values (@firstName, @lastName, @addressId, GETDATE())
+SET @id=SCOPE_IDENTITY()
+      RETURN  @id
 END
 GO
 
@@ -253,11 +256,14 @@ GO
 CREATE PROCEDURE usp_postZipcode
 (
 	@zipcodeName nvarchar(8),
-	@cityName nvarchar(50)
+	@cityName nvarchar(50),
+	@id int output
 )
 AS
 BEGIN
 INSERT INTO Zipcode(ZipcodeName, CityName) values (@zipcodeName, @cityName)
+SET @id=SCOPE_IDENTITY()
+RETURN  @id
 END
 GO
 
@@ -307,11 +313,14 @@ GO
 CREATE PROCEDURE usp_postAddress
 (
 	@streetAndNo nvarchar(100),
-	@zipcodeId int
+	@zipcodeId int,
+	@id int output
 )
 AS
 BEGIN
 INSERT INTO Address(StreetAndNo, FK_ZipcodeId, CreateDate) values (@streetAndNo, @zipcodeId, GETDATE())
+SET @id=SCOPE_IDENTITY()
+RETURN  @id
 END
 GO
 
@@ -360,11 +369,14 @@ GO
 
 CREATE PROCEDURE usp_postCategory
 (
-	@categoryName nvarchar(100)
+	@categoryName nvarchar(100),
+	@id int output
 )
 AS
 BEGIN
 INSERT INTO Category(CategoryName) values (@categoryName)
+SET @id=SCOPE_IDENTITY()
+RETURN  @id
 END
 GO
 
@@ -412,11 +424,14 @@ GO
 
 CREATE PROCEDURE usp_postFuel
 (
-	@fuelName nvarchar(50)
+	@fuelName nvarchar(50),
+	@id int output
 )
 AS
 BEGIN
 INSERT INTO Fuel(FuelName) values (@fuelName)
+SET @id=SCOPE_IDENTITY()
+RETURN  @id
 END
 GO
 
@@ -467,11 +482,14 @@ CREATE PROCEDURE usp_postVehicle
 	@make nvarchar(50),
 	@model nvarchar(50),
 	@categoryId int,
-	@fuelId int
+	@fuelId int,
+	@id int output
 )
 AS
 BEGIN
 INSERT INTO Vehicle(Make, Model, FK_CategoryId, FK_FuelId, CreateDate) values (@make, @model, @categoryId, @fuelId, GETDATE())
+SET @id=SCOPE_IDENTITY()
+RETURN  @id
 END
 GO
 
@@ -524,11 +542,14 @@ CREATE PROCEDURE usp_postRegistration
 (
 	@customerId int,
 	@vehicleId int,
-	@firstRegistrationDate date
+	@firstRegistrationDate date,
+	@id int output
 )
 AS
 BEGIN
 INSERT INTO Registration(FK_CustomerId, FK_VehicleId, FirstRegistrationDate) values (@customerId, @vehicleId, @firstRegistrationDate)
+SET @id=SCOPE_IDENTITY()
+RETURN  @id
 END
 GO
 
@@ -557,68 +578,91 @@ WHERE RegistrationId = @registrationId
 END
 GO
 
+
+
 /* Seed Data */
-exec usp_postZipcode @zipcodeName = '2650', @cityName = 'Hvidovre'
+declare @id int
+exec usp_postZipcode @zipcodeName = '2650', @cityName = 'Hvidovre', @id = @id OUTPUT
 GO
 
-exec usp_postZipcode @zipcodeName = '4930', @cityName = 'Maribo'
+declare @id int
+exec usp_postZipcode @zipcodeName = '4930', @cityName = 'Maribo', @id = @id OUTPUT
 GO
 
-exec usp_postZipcode @zipcodeName = '8000', @cityName = 'Aarhus C'
+declare @id int
+exec usp_postZipcode @zipcodeName = '8000', @cityName = 'Aarhus C', @id = @id OUTPUT
 GO
 
-exec usp_postAddress @streetAndNo = 'Gadevej 1', @zipcodeId = 1
+declare @id int
+exec usp_postAddress @streetAndNo = 'Gadevej 1', @zipcodeId = 1, @id = @id OUTPUT
 GO
 
-exec usp_postAddress @streetAndNo = 'Vejstræde 5', @zipcodeId = 2
+declare @id int
+exec usp_postAddress @streetAndNo = 'Vejstræde 5', @zipcodeId = 2, @id = @id OUTPUT
 GO
 
-exec usp_postAddress @streetAndNo = 'Langgade 7', @zipcodeId = 3
+declare @id int
+exec usp_postAddress @streetAndNo = 'Langgade 7', @zipcodeId = 3, @id = @id OUTPUT
 GO
 
-exec usp_postCustomer @firstName = 'Palle', @lastName = 'Westermann', @addressId = 1
+declare @id int
+exec usp_postCustomer @firstName = 'Palle', @lastName = 'Westermann', @addressId = 1, @id = @id OUTPUT
 GO
 
-exec usp_postCustomer @firstName = 'Jan', @lastName = 'Stern', @addressId = 2
+declare @id int
+exec usp_postCustomer @firstName = 'Jan', @lastName = 'Stern', @addressId = 2, @id = @id OUTPUT
 GO
 
-exec usp_postCustomer @firstName = 'Ulla', @lastName = 'Hansen', @addressId = 3
+declare @id int
+exec usp_postCustomer @firstName = 'Ulla', @lastName = 'Hansen', @addressId = 3, @id = @id OUTPUT
 GO
 
-exec usp_postCategory @categoryName = 'Van'
+declare @id int
+exec usp_postCategory @categoryName = 'Van', @id = @id OUTPUT
 GO
 
-exec usp_postCategory @categoryName = 'Hatchback'
+declare @id int
+exec usp_postCategory @categoryName = 'Hatchback', @id = @id OUTPUT
 GO
 
-exec usp_postCategory @categoryName = 'Sedan'
+declare @id int
+exec usp_postCategory @categoryName = 'Sedan', @id = @id OUTPUT
 GO
 
-exec usp_postFuel @fuelName = 'Gasoline'
+declare @id int
+exec usp_postFuel @fuelName = 'Gasoline', @id = @id OUTPUT
 GO
 
-exec usp_postFuel @fuelName = 'Diesel'
+declare @id int
+exec usp_postFuel @fuelName = 'Diesel', @id = @id OUTPUT
 GO
 
-exec usp_postFuel @fuelName = 'Electrical'
+declare @id int
+exec usp_postFuel @fuelName = 'Electrical', @id = @id OUTPUT
 GO
 
-exec usp_postVehicle @make = 'Volkswagen', @model = 'Vento', @categoryId = 2, @fuelId = 1
+declare @id int
+exec usp_postVehicle @make = 'Volkswagen', @model = 'Vento', @categoryId = 2, @fuelId = 1, @id = @id OUTPUT
 GO
 
-exec usp_postVehicle @make = 'Mercedes', @model = 'Transporter', @categoryId = 1, @fuelId = 2
+declare @id int
+exec usp_postVehicle @make = 'Mercedes', @model = 'Transporter', @categoryId = 1, @fuelId = 2, @id = @id OUTPUT
 GO
 
-exec usp_postVehicle @make = 'Tesla', @model = 'Model S', @categoryId = 3, @fuelId = 3
+declare @id int
+exec usp_postVehicle @make = 'Tesla', @model = 'Model S', @categoryId = 3, @fuelId = 3, @id = @id OUTPUT
 GO
 
-exec usp_postRegistration @customerId = 1, @vehicleId = 1, @firstRegistrationDate = '2007-03-15'
+declare @id int
+exec usp_postRegistration @customerId = 1, @vehicleId = 1, @firstRegistrationDate = '2007-03-15', @id = @id OUTPUT
 GO
 
-exec usp_postRegistration @customerId = 2, @vehicleId = 2, @firstRegistrationDate = '2014-07-24'
+declare @id int
+exec usp_postRegistration @customerId = 2, @vehicleId = 2, @firstRegistrationDate = '2014-07-24', @id = @id OUTPUT
 GO
 
-exec usp_postRegistration @customerId = 3, @vehicleId = 3, @firstRegistrationDate = '2020-01-07'
+declare @id int
+exec usp_postRegistration @customerId = 3, @vehicleId = 3, @firstRegistrationDate = '2020-01-07', @id = @id OUTPUT
 GO
 
 exec usp_postLogin @username = 'username', @passwd = 'password'

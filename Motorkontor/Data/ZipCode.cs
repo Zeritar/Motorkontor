@@ -41,6 +41,26 @@ namespace Motorkontor.Data
             this.deleted = deleted;
         }
 
+        public bool GetChanged()
+        {
+            return hasChanged;
+        }
+
+        public bool GetDeleted()
+        {
+            return deleted;
+        }
+
+        public string GetModelType()
+        {
+            return "zipCode";
+        }
+
+        public string GetFKName()
+        {
+            return "Postnummer";
+        }
+
         public void UpdateFields(Dictionary<Field, string> fields)
         {
             foreach (var field in fields)

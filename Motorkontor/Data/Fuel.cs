@@ -34,6 +34,26 @@ namespace Motorkontor.Data
             return fuelId;
         }
 
+        public bool GetChanged()
+        {
+            return hasChanged;
+        }
+
+        public bool GetDeleted()
+        {
+            return deleted;
+        }
+
+        public string GetModelType()
+        {
+            return "fuel";
+        }
+
+        public string GetFKName()
+        {
+            return "Brændstof";
+        }
+
         public void SetDeleted(bool deleted)
         {
             this.deleted = deleted;

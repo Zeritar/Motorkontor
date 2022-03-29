@@ -7,6 +7,13 @@ namespace Motorkontor.Data
         public Dictionary<Field, string> GetFields();
         public void UpdateFields(Dictionary<Field, string> fields);
         public int GetId();
+
+        public bool GetChanged();
+
+        public bool GetDeleted();
+
+        public string GetModelType();
+        public string GetFKName();
         public void SetDeleted(bool deleted);
     }
 

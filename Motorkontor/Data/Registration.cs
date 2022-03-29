@@ -40,6 +40,26 @@ namespace Motorkontor.Data
             return registrationId;
         }
 
+        public bool GetChanged()
+        {
+            return hasChanged;
+        }
+
+        public bool GetDeleted()
+        {
+            return deleted;
+        }
+
+        public string GetModelType()
+        {
+            return "registration";
+        }
+
+        public string GetFKName()
+        {
+            return "Registrering";
+        }
+
         public void SetDeleted(bool deleted)
         {
             this.deleted = deleted;

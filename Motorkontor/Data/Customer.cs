@@ -45,6 +45,26 @@ namespace Motorkontor.Data
             return customerID;
         }
 
+        public bool GetChanged()
+        {
+            return hasChanged;
+        }
+
+        public bool GetDeleted()
+        {
+            return deleted;
+        }
+
+        public string GetModelType()
+        {
+            return "customer";
+        }
+
+        public string GetFKName()
+        {
+            return "Kunde";
+        }
+
         public void SetDeleted(bool deleted)
         {
             this.deleted = deleted;

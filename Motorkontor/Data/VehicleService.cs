@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 
@@ -67,7 +68,7 @@ namespace Motorkontor.Data
             return null;
         }
 
-        public bool PostVehicle(Vehicle vehicle)
+        public int PostVehicle(Vehicle vehicle)
         {
             using (SqlConnection connection = new SqlConnection(connStr))
             {
@@ -76,9 +77,12 @@ namespace Motorkontor.Data
                     new SqlParameter("@make", vehicle.make),
                     new SqlParameter("@model", vehicle.model),
                     new SqlParameter("@categoryId", vehicle.category.categoryId),
-                    new SqlParameter("@fuelId", vehicle.fuel.fuelId)
+                    new SqlParameter("@fuelId", vehicle.fuel.fuelId),
+                    new SqlParameter("@id", SqlDbType.Int)
                 };
-                return PostProcedure(connection, "usp_postVehicle", parameters);
+                parameters[parameters.Count - 1].Direction = ParameterDirection.Output;
+                PostProcedure(connection, "usp_postVehicle", parameters);
+                return (int)parameters[parameters.Count - 1].Value;
             }
         }
 

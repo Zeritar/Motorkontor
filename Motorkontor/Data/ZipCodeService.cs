@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 
@@ -52,16 +53,19 @@ namespace Motorkontor.Data
             return null;
         }
 
-        public bool PostZipCode(ZipCode zipCode)
+        public int PostZipCode(ZipCode zipCode)
         {
             using (SqlConnection connection = new SqlConnection(connStr))
             {
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
                     new SqlParameter("@zipcodeName", zipCode.zipCodeName),
-                    new SqlParameter("@cityName", zipCode.cityName)
+                    new SqlParameter("@cityName", zipCode.cityName),
+                    new SqlParameter("@id", SqlDbType.Int)
                 };
-                return PostProcedure(connection, "usp_postZipcode", parameters);
+                parameters[parameters.Count - 1].Direction = ParameterDirection.Output;
+                PostProcedure(connection, "usp_postZipcode", parameters);
+                return (int)parameters[parameters.Count - 1].Value;
             }
         }
 
