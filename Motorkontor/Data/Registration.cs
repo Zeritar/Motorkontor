@@ -6,7 +6,9 @@ namespace Motorkontor.Data
     public class Registration : IDetailModel
     {
         public int registrationId { get; private set; }
-        public DateTime firstRegistrationDate { get; set; }
+        public DateTime registrationDate { get; set; }
+
+        private string firstRegistrationDate = "";
 
         public virtual Customer customer { get; set; }
         public virtual Vehicle vehicle { get; set; }
@@ -23,15 +25,17 @@ namespace Motorkontor.Data
         public Registration(int _id)
         {
             registrationId = _id;
+            registrationDate = DateTime.Now;
         }
 
         public Dictionary<Field, string> GetFields()
         {
             Dictionary<Field, string> fields = new Dictionary<Field, string>();
             fields.Add(new Field("id", "Registrering ID"), registrationId.ToString());
-            fields.Add(new Field(nameof(firstRegistrationDate), "Første Registreringsdato"), firstRegistrationDate.ToShortDateString());
+            fields.Add(new Field(nameof(registrationDate), "Registreringsdato"), registrationDate.ToShortDateString());
             fields.Add(new Field(nameof(customer), "FK_Kunde"), (customer != null) ? customer.customerID.ToString() : "");
             fields.Add(new Field(nameof(vehicle), "FK_Vehicle"), (vehicle != null) ? vehicle.vehicleId.ToString() : "");
+            fields.Add(new Field(nameof(vehicle.firstRegistrationDate), "Første Registreringsdato"), (vehicle != null) ? vehicle.firstRegistrationDate.ToShortDateString() : DateTime.Now.ToShortDateString());
             return fields;
         }
 
@@ -73,20 +77,24 @@ namespace Motorkontor.Data
                 {
                     case "id":
                         break;
-                    case nameof(firstRegistrationDate):
-                        firstRegistrationDate = DateTime.Parse(field.Value);
-                        break;
-                    case nameof(customer):
-                        customer = new Customer(Convert.ToInt32(field.Value));
+                    case nameof(registrationDate):
+                        registrationDate = DateTime.Parse(field.Value);
                         break;
                     case nameof(vehicle):
-                        vehicle = new Vehicle(Convert.ToInt32(field.Value));
+                        vehicle = new Vehicle(field.Value != "" ? Convert.ToInt32(field.Value) : 0);
+                        break;
+                    case nameof(vehicle.firstRegistrationDate):
+                        firstRegistrationDate = field.Value;
+                        break;
+                    case nameof(customer):
+                        customer = new Customer(field.Value != "" ? Convert.ToInt32(field.Value) : 0);
                         break;
                     default:
                         System.Diagnostics.Debug.WriteLine("Got unrecognized field: " + field.Key.Name);
                         break;
                 }
             }
+            vehicle.firstRegistrationDate = DateTime.Parse(firstRegistrationDate);
             hasChanged = true;
         }
     }

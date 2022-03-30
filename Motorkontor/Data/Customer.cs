@@ -27,6 +27,7 @@ namespace Motorkontor.Data
         public Customer(int _id)
         {
             customerID = _id;
+            createDate = DateTime.Now;
         }
 
         public Dictionary<Field, string> GetFields()

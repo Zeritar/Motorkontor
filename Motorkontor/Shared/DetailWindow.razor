@@ -119,6 +119,15 @@
     {
         fields[field] = e.Value.ToString();
         fieldValues[field.Name.ToLower()] = e.Value.ToString();
+
+        detailModel.UpdateFields(fields);
+
+        if (Title == "Registrering" && field.Name.ToLower() == "vehicle")
+        {
+            fieldValues["firstregistrationdate"] = ForeignKeyService.GetDetailModelFromForeignKey("vehicle", e.Value.ToString())
+                .GetFields().Where(e => e.Key.Name.ToLower() == "firstregistrationdate").FirstOrDefault().Value;
+            fields[fields.Where(e => e.Key.Name.ToLower() == "firstregistrationdate").FirstOrDefault().Key] = fieldValues["firstregistrationdate"];
+        }
     }
 
     void newClick()

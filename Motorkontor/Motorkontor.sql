@@ -60,14 +60,14 @@ CREATE TABLE Vehicle(
 	Model nvarchar(50),
 	FK_CategoryId int FOREIGN KEY REFERENCES Category(CategoryId),
 	FK_FuelId int FOREIGN KEY REFERENCES Fuel(FuelId),
-	CreateDate date
+	FirstRegistrationDate date
 )
 
 CREATE TABLE Registration(
 	RegistrationId int IDENTITY PRIMARY KEY,
 	FK_CustomerId int FOREIGN KEY REFERENCES Customer(CustomerId),
 	FK_VehicleId int FOREIGN KEY REFERENCES Vehicle(VehicleId),
-	FirstRegistrationDate date
+	RegistrationDate date
 )
 GO
 
@@ -465,7 +465,7 @@ CREATE PROCEDURE usp_readVehicleById
 )
 AS
 BEGIN
-SELECT VehicleId, Make, Model, FK_CategoryId, FK_FuelId, CreateDate FROM Vehicle
+SELECT VehicleId, Make, Model, FK_CategoryId, FK_FuelId, FirstRegistrationDate FROM Vehicle
 WHERE VehicleId = @vehicleId
 END
 GO
@@ -473,7 +473,7 @@ GO
 CREATE PROCEDURE usp_readVehicles
 AS
 BEGIN
-SELECT VehicleId, Make, Model, FK_CategoryId, FK_FuelId, CreateDate FROM Vehicle
+SELECT VehicleId, Make, Model, FK_CategoryId, FK_FuelId, FirstRegistrationDate FROM Vehicle
 END
 GO
 
@@ -483,11 +483,12 @@ CREATE PROCEDURE usp_postVehicle
 	@model nvarchar(50),
 	@categoryId int,
 	@fuelId int,
+	@firstRegistrationDate date,
 	@id int output
 )
 AS
 BEGIN
-INSERT INTO Vehicle(Make, Model, FK_CategoryId, FK_FuelId, CreateDate) values (@make, @model, @categoryId, @fuelId, GETDATE())
+INSERT INTO Vehicle(Make, Model, FK_CategoryId, FK_FuelId, FirstRegistrationDate) values (@make, @model, @categoryId, @fuelId, @firstRegistrationDate)
 SET @id=SCOPE_IDENTITY()
 RETURN  @id
 END
@@ -499,11 +500,12 @@ CREATE PROCEDURE usp_updateVehicle
 	@make nvarchar(50),
 	@model nvarchar(50),
 	@categoryId int,
-	@fuelId int
+	@fuelId int,
+	@firstRegistrationDate date
 )
 AS
 BEGIN
-UPDATE Vehicle SET Make = @make, Model = @model, FK_CategoryId = @categoryId, FK_FuelId = @fuelId
+UPDATE Vehicle SET Make = @make, Model = @model, FK_CategoryId = @categoryId, FK_FuelId = @fuelId, FirstRegistrationDate = @firstRegistrationDate
 WHERE VehicleId = @vehicleId
 END
 GO
@@ -526,7 +528,7 @@ CREATE PROCEDURE usp_readRegistrationById
 )
 AS
 BEGIN
-SELECT RegistrationId, FK_CustomerId, FK_VehicleId, FirstRegistrationDate FROM Registration
+SELECT RegistrationId, FK_CustomerId, FK_VehicleId, RegistrationDate FROM Registration
 WHERE RegistrationId = @registrationId
 END
 GO
@@ -534,7 +536,7 @@ GO
 CREATE PROCEDURE usp_readRegistrations
 AS
 BEGIN
-SELECT RegistrationId, FK_CustomerId, FK_VehicleId, FirstRegistrationDate FROM Registration
+SELECT RegistrationId, FK_CustomerId, FK_VehicleId, RegistrationDate FROM Registration
 END
 GO
 
@@ -542,12 +544,12 @@ CREATE PROCEDURE usp_postRegistration
 (
 	@customerId int,
 	@vehicleId int,
-	@firstRegistrationDate date,
+	@registrationDate date,
 	@id int output
 )
 AS
 BEGIN
-INSERT INTO Registration(FK_CustomerId, FK_VehicleId, FirstRegistrationDate) values (@customerId, @vehicleId, @firstRegistrationDate)
+INSERT INTO Registration(FK_CustomerId, FK_VehicleId, RegistrationDate) values (@customerId, @vehicleId, @registrationDate)
 SET @id=SCOPE_IDENTITY()
 RETURN  @id
 END
@@ -558,11 +560,11 @@ CREATE PROCEDURE usp_updateRegistration
 	@registrationId int,
 	@customerId int,
 	@vehicleId int,
-	@firstRegistrationDate date
+	@registrationDate date
 )
 AS
 BEGIN
-UPDATE Registration SET FK_CustomerId = @customerId, FK_VehicleId = @vehicleId, @firstRegistrationDate = @firstRegistrationDate
+UPDATE Registration SET FK_CustomerId = @customerId, FK_VehicleId = @vehicleId, RegistrationDate = @registrationDate
 WHERE RegistrationId = @registrationId
 END
 GO
@@ -642,27 +644,27 @@ exec usp_postFuel @fuelName = 'Electrical', @id = @id OUTPUT
 GO
 
 declare @id int
-exec usp_postVehicle @make = 'Volkswagen', @model = 'Vento', @categoryId = 2, @fuelId = 1, @id = @id OUTPUT
+exec usp_postVehicle @make = 'Volkswagen', @model = 'Vento', @categoryId = 2, @fuelId = 1, @firstRegistrationDate = '2007-03-15', @id = @id OUTPUT
 GO
 
 declare @id int
-exec usp_postVehicle @make = 'Mercedes', @model = 'Transporter', @categoryId = 1, @fuelId = 2, @id = @id OUTPUT
+exec usp_postVehicle @make = 'Mercedes', @model = 'Transporter', @categoryId = 1, @fuelId = 2, @firstRegistrationDate = '2014-07-24', @id = @id OUTPUT
 GO
 
 declare @id int
-exec usp_postVehicle @make = 'Tesla', @model = 'Model S', @categoryId = 3, @fuelId = 3, @id = @id OUTPUT
+exec usp_postVehicle @make = 'Tesla', @model = 'Model S', @categoryId = 3, @fuelId = 3, @firstRegistrationDate = '2020-01-07', @id = @id OUTPUT
 GO
 
 declare @id int
-exec usp_postRegistration @customerId = 1, @vehicleId = 1, @firstRegistrationDate = '2007-03-15', @id = @id OUTPUT
+exec usp_postRegistration @customerId = 1, @vehicleId = 1, @registrationDate = '2007-03-15', @id = @id OUTPUT
 GO
 
 declare @id int
-exec usp_postRegistration @customerId = 2, @vehicleId = 2, @firstRegistrationDate = '2014-07-24', @id = @id OUTPUT
+exec usp_postRegistration @customerId = 2, @vehicleId = 2, @registrationDate = '2014-07-24', @id = @id OUTPUT
 GO
 
 declare @id int
-exec usp_postRegistration @customerId = 3, @vehicleId = 3, @firstRegistrationDate = '2020-01-07', @id = @id OUTPUT
+exec usp_postRegistration @customerId = 3, @vehicleId = 3, @registrationDate = '2020-01-07', @id = @id OUTPUT
 GO
 
 exec usp_postLogin @username = 'username', @passwd = 'password'

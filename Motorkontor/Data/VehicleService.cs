@@ -29,7 +29,7 @@ namespace Motorkontor.Data
                     {
                         make = reader["Make"].ToString(),
                         model = reader["Model"].ToString(),
-                        createDate = (DateTime)reader["CreateDate"],
+                        firstRegistrationDate = (DateTime)reader["FirstRegistrationDate"],
                         category = categoryService.GetCategoryById(Convert.ToInt32(reader["FK_CategoryId"].ToString())),
                         fuel = fuelService.GetFuelById(Convert.ToInt32(reader["FK_FuelId"].ToString()))
                     });
@@ -56,7 +56,7 @@ namespace Motorkontor.Data
                     {
                         make = reader["Make"].ToString(),
                         model = reader["Model"].ToString(),
-                        createDate = (DateTime)reader["CreateDate"],
+                        firstRegistrationDate = (DateTime)reader["FirstRegistrationDate"],
                         category = categoryService.GetCategoryById(Convert.ToInt32(reader["FK_CategoryId"].ToString())),
                         fuel = fuelService.GetFuelById(Convert.ToInt32(reader["FK_FuelId"].ToString()))
                     });

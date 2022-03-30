@@ -8,7 +8,7 @@ namespace Motorkontor.Data
         public int vehicleId { get; private set; }
         public string make { get; set; }
         public string model { get; set; }
-        public DateTime createDate { get; set; }
+        public DateTime firstRegistrationDate { get; set; }
 
         public virtual Category category { get; set; }
         public virtual Fuel fuel { get; set; }
@@ -25,6 +25,7 @@ namespace Motorkontor.Data
         public Vehicle(int _id)
         {
             vehicleId = _id;
+            firstRegistrationDate = DateTime.Now;
         }
 
         public Dictionary<Field, string> GetFields()
@@ -33,7 +34,7 @@ namespace Motorkontor.Data
             fields.Add(new Field("id", "Køretøj ID"), vehicleId.ToString());
             fields.Add(new Field(nameof(make), "Fabrikant"), Field.NullToEmpty(make));
             fields.Add(new Field(nameof(model), "Model"), Field.NullToEmpty(model));
-            fields.Add(new Field(nameof(createDate), "Dato Oprettet"), createDate.ToShortDateString());
+            fields.Add(new Field(nameof(firstRegistrationDate), "Første Registreringsdato"), firstRegistrationDate.ToShortDateString());
             fields.Add(new Field(nameof(category), "FK_Kategori"), (category != null) ? category.categoryId.ToString() : "");
             fields.Add(new Field(nameof(fuel), "FK_Brændstof"),  (fuel != null) ? fuel.fuelId.ToString() : "");
             return fields;
@@ -83,7 +84,7 @@ namespace Motorkontor.Data
                     case nameof(model):
                         model = field.Value;
                         break;
-                    case nameof(createDate):
+                    case nameof(firstRegistrationDate):
                         break;
                     case nameof(category):
                         category = new Category(Convert.ToInt32(field.Value));

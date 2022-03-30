@@ -22,6 +22,7 @@ namespace Motorkontor.Data
         public Address(int _id)
         {
             addressId = _id;
+            createDate = DateTime.Now;
         }
 
         public Dictionary<Field, string> GetFields()

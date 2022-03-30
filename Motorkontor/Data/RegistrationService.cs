@@ -27,7 +27,7 @@ namespace Motorkontor.Data
                 {
                     registrations.Add(new Registration(Convert.ToInt32(reader["RegistrationId"]))
                     {
-                        firstRegistrationDate = (DateTime)reader["FirstRegistrationDate"],
+                        registrationDate = (DateTime)reader["RegistrationDate"],
                         customer = customerService.GetCustomerById(Convert.ToInt32(reader["FK_CustomerId"].ToString())),
                         vehicle = vehicleService.GetVehicleById(Convert.ToInt32(reader["FK_VehicleId"].ToString()))
 
@@ -53,7 +53,7 @@ namespace Motorkontor.Data
                 {
                     registrations.Add(new Registration(Convert.ToInt32(reader["RegistrationId"]))
                     {
-                        firstRegistrationDate = (DateTime)reader["FirstRegistrationDate"],
+                        registrationDate = (DateTime)reader["RegistrationDate"],
                         customer = customerService.GetCustomerById(Convert.ToInt32(reader["FK_CustomeryId"].ToString())),
                         vehicle = vehicleService.GetVehicleById(Convert.ToInt32(reader["FK_VehicleId"].ToString()))
 
@@ -72,7 +72,7 @@ namespace Motorkontor.Data
             {
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
-                    new SqlParameter("@firstRegistrationDate", registration.firstRegistrationDate),
+                    new SqlParameter("@registrationDate", registration.registrationDate),
                     new SqlParameter("@customerId", registration.customer.customerID),
                     new SqlParameter("@vehicleId", registration.vehicle.vehicleId),
                     new SqlParameter("@id", SqlDbType.Int)
@@ -90,7 +90,7 @@ namespace Motorkontor.Data
                 List<SqlParameter> parameters = new List<SqlParameter>()
                 {
                     new SqlParameter("@registrationId", registration.registrationId),
-                    new SqlParameter("@firstRegistrationDate", registration.firstRegistrationDate),
+                    new SqlParameter("@registrationDate", registration.registrationDate),
                     new SqlParameter("@customerId", registration.customer.customerID),
                     new SqlParameter("@vehicleId", registration.vehicle.vehicleId)
                 };
