@@ -86,5 +86,10 @@ namespace Motorkontor.Data
             }
             hasChanged = true;
         }
+
+        public override string ToString()
+        {
+            return $"{streetAndNo} - {zipCode.zipCodeName} {zipCode.cityName}";
+        }
     }
 }

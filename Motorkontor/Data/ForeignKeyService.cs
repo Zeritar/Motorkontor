@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Data.SqlClient;
 
 namespace Motorkontor.Data
@@ -74,6 +75,64 @@ namespace Motorkontor.Data
                     return id != 0 ? zipCodeService.GetZipCodeById(id) : new ZipCode();
                 case "category":
                     return id != 0 ? categoryService.GetCategoryById(id) : new Category();
+                default:
+                    return null;
+            }
+        }
+
+        public List<IDetailModel> GetDetailModelsFromForeignKeyType(string fkField)
+        {
+            List<IDetailModel> models = new List<IDetailModel>();
+            switch (fkField.ToLower())
+            {
+                case "customer":
+                    Customer[] customers = customerService.GetCustomers();
+                    if (customers.Length > 0)
+                        foreach (var item in customers)
+                        {
+                            models.Add(item);
+                        }
+                    return models;
+                case "vehicle":
+                    Vehicle[] vehicles = vehicleService.GetVehicles();
+                    if (vehicles.Length > 0)
+                        foreach (var item in vehicles)
+                        {
+                            models.Add(item);
+                        }
+                    return models;
+                case "address":
+                    Address[] addresses = addressService.GetAddresses();
+                    if (addresses.Length > 0)
+                        foreach (var item in addresses)
+                        {
+                            models.Add(item);
+                        }
+                    return models;
+                case "fuel":
+                    Fuel[] fuels = fuelService.GetFuels();
+                    if (fuels.Length > 0)
+                        foreach (var item in fuels)
+                        {
+                            models.Add(item);
+                        }
+                    return models;
+                case "zipcode":
+                    ZipCode[] zipCodes = zipCodeService.GetZipCodes();
+                    if (zipCodes.Length > 0)
+                        foreach (var item in zipCodes)
+                        {
+                            models.Add(item);
+                        }
+                    return models;
+                case "category":
+                    Category[] categories = categoryService.GetCategories();
+                    if (categories.Length > 0)
+                        foreach (var item in categories)
+                        {
+                            models.Add(item);
+                        }
+                    return models;
                 default:
                     return null;
             }

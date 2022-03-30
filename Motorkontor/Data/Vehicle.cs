@@ -98,5 +98,10 @@ namespace Motorkontor.Data
             }
             hasChanged = true;
         }
+
+        public override string ToString()
+        {
+            return $"{make} {model}";
+        }
     }
 }

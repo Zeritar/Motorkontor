@@ -96,5 +96,10 @@ namespace Motorkontor.Data
             }
             hasChanged = true;
         }
+
+        public override string ToString()
+        {
+            return $"{firstName} {lastName}";
+        }
     }
 }

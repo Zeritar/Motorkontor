@@ -14,6 +14,7 @@
     {
         if (fieldValues == null)
         {
+            fields = detailModel.GetFields();
             fieldValues = new Dictionary<string, string>();
             foreignModels = new Dictionary<string, IDetailModel>();
             @foreach (var field in detailModel.GetFields())
@@ -25,23 +26,34 @@
                 }
             }
         }
-        @foreach (var field in detailModel.GetFields())
+        @foreach (var field in fields)
         {
-            <div class="detailInput">
-                <p>@field.Key.Text</p>
-                @if (!field.Key.Text.ToLower().Contains("id") && !field.Key.Text.ToLower().Contains("fk"))
-                {
-                    <input id="@field.Value" value="@field.Value" @onchange="((ChangeEventArgs e) => onChange(e.Value.ToString(), field.Key.Name.ToLower()))">
-                }
-                else if (field.Key.Text.ToLower().Contains("fk"))
-                {
-                    <p class="clickable" @onclick="() => ToggleDetailWindow(foreignModels[field.Key.Name])">@parseForeignKey(field.Key.Name, field.Value)</p>
-                }
-                else
-                {
-                    <p class="detailID">@field.Value</p>
-                }
-            </div>
+<div class="detailInput">
+    <p>@field.Key.Text</p>
+    @if (!field.Key.Text.ToLower().Contains("id") && !field.Key.Text.ToLower().Contains("fk"))
+    {
+        <input id="@field.Value" value="@field.Value" @onchange="((ChangeEventArgs e) => onChange(e.Value.ToString(), field.Key.Name.ToLower()))">
+    }
+    else if (field.Key.Text.ToLower().Contains("fk"))
+    {
+        <select value="@field.Value" @onchange="e => SelectForeignKey(e, field.Key)">
+            @foreach (var model in ForeignKeyService.GetDetailModelsFromForeignKeyType(field.Key.Name))
+            {
+                <option value="@model.GetId()">@model.ToString()</option>
+            }
+        </select>
+        <button @onclick="() => ToggleDetailWindow(foreignModels[field.Key.Name])">
+            Rediger @ForeignKeyService.GetDetailModelFromForeignKey(field.Key.Name, 0.ToString()).GetFKName()
+        </button>
+        <button @onclick="() => ToggleDetailWindow(ForeignKeyService.CreateDetailModelFromForeignKey(field.Key.Name))">
+            Ny @ForeignKeyService.GetDetailModelFromForeignKey(field.Key.Name, 0.ToString()).GetFKName()
+        </button>
+    }
+    else
+    {
+        <p class="detailID">@field.Value</p>
+    }
+</div>
         }
     }
 </div>
@@ -62,6 +74,8 @@
 
     [Parameter]
     public IDetailModel detailModel { get; set; }
+
+    private Dictionary<Field, string> fields;
 
     Dictionary<string, string> fieldValues;
     Dictionary<string, string> oldFieldValues;
@@ -99,6 +113,12 @@
             OnSaveClickCallback.InvokeAsync();
         else
             OnForeignKeySaveCallback.InvokeAsync(detailModel);
+    }
+
+    void SelectForeignKey(ChangeEventArgs e, Field field)
+    {
+        fields[field] = e.Value.ToString();
+        fieldValues[field.Name.ToLower()] = e.Value.ToString();
     }
 
     void newClick()

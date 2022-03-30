@@ -86,3 +86,11 @@ td {
     text-decoration: underline;
     cursor: pointer;
 }
+
+select {
+    width: 100%;
+}
+
+button {
+    margin: 10px 5px 10px 0px;
+}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 
@@ -65,7 +66,7 @@ namespace Motorkontor.Data
             return null;
         }
 
-        public bool PostRegistration(Registration registration)
+        public int PostRegistration(Registration registration)
         {
             using (SqlConnection connection = new SqlConnection(connStr))
             {
@@ -73,9 +74,12 @@ namespace Motorkontor.Data
                 {
                     new SqlParameter("@firstRegistrationDate", registration.firstRegistrationDate),
                     new SqlParameter("@customerId", registration.customer.customerID),
-                    new SqlParameter("@vehicleId", registration.vehicle.vehicleId)
+                    new SqlParameter("@vehicleId", registration.vehicle.vehicleId),
+                    new SqlParameter("@id", SqlDbType.Int)
                 };
-                return PostProcedure(connection, "usp_postRegistration", parameters);
+                parameters[parameters.Count - 1].Direction = ParameterDirection.Output;
+                PostProcedure(connection, "usp_postRegistration", parameters);
+                return (int)parameters[parameters.Count - 1].Value;
             }
         }
 

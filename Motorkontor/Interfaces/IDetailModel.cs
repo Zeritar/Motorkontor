@@ -32,5 +32,10 @@ namespace Motorkontor.Data
             Name = name;
             Text = text;
         }
+
+        public override string ToString()
+        {
+            return $"({Name} - {Text})";
+        }
     }
 }
