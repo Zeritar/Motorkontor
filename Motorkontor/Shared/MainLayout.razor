@@ -68,7 +68,10 @@
     private async Task HandleLogin(Session _session)
     {
         session = SessionService.GetSessionByGuid(_session.gUID);
+        if (session == null)
+            session = _session;
         StateHasChanged();
+        guid = session.gUID;
         await StoreGuid();
     }
 

@@ -7,7 +7,7 @@ namespace Motorkontor.Data
 {
     public class DbService
     {
-        public string connStr = @"Data Source=.\SQLEXPRESS;Initial Catalog=Motorkontor;Integrated Security=True;TrustServerCertificate=True";
+        public string connStr = @"Data Source=.\sqlh2;Initial Catalog=Motorkontor;Integrated Security=True;TrustServerCertificate=True";
 
         public SqlDataReader GetProcedure(SqlConnection connection, string procedure, List<SqlParameter>? parameters)
         {
