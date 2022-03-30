@@ -12,7 +12,7 @@
         <label for="password">Password</label>
         <input type="password" id="password" value="@password" @onchange="((ChangeEventArgs e) => onPasswordChange(e.Value.ToString()))">
     </div>
-    <button @onclick="FakeLogin">Login</button>
+    <button @onclick="Login">Login</button>
 </div>
 @code
 {
@@ -24,13 +24,13 @@
 
     string username = "", password = "";
 
-    void FakeLogin()
+    void Login()
     {
         if (username == "" || password == "")
             return;
 
         Login login = LoginService.Login(username, password);
-        if (Session == null)
+        if (Session == null || Session.login == null)
         {
             Session = new Session();
             Session.login = new Login(1);
